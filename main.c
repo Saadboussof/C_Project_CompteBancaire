@@ -29,7 +29,7 @@ int main() {
             case 3:
                 exit(0);
             default:
-                printf("invalid ! Please try again.\n");
+                printf("invalid azerty ! Please try again.\n");
         }
     }
 
