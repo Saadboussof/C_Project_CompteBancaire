@@ -30,6 +30,7 @@ int main() {
                 exit(0);
             default:
                 printf("invalid ! Please try again.\n");
+                printf(" abdo ");
         }
     }
 
