@@ -1,36 +1,35 @@
 #include <stdio.h>
+#include <time.h>
 #include <stdlib.h>
+#include "tools.h"
+#include "client.h"
 #include "account.h"
-#include "user.h"
+#include "file_operations.h"
 
-int main() {
-    User user;
-    Account acc;
+int main()
+{
+    srand(time(NULL)); // Seed the random number generator
+
+    printf("Welcome to your BANK MANAGMENT SYSTEM");
+
     int choice;
 
-    while (1) {
-        printf("\n 1. Sign Up \n 2. Log In \n 3. Exit \n");
-        printf("  Choose an option: ");
-        scanf("%d", &choice);
+    printf("1. Sign Up\n");
+    printf("2. Log In\n");
+    printf("Choose an option: ");
+    scanf("%d", &choice);
 
-        switch (choice) {
-            case 1:
-                signUp(&user);
-                break;
-            case 2:
-                if (logIn(&user)) {
-                    int accountNumber;
-                    printf(" Enter account number : ");
-                    scanf("%d", &accountNumber);
-                    createAccount(&acc, accountNumber);
-                    displayAccount(&acc);
-                }
-                break;
-            case 3:
-                exit(0);
-            default:
-                printf("invalid ! Please try again.\n");
-        }
+    if (choice == 1)
+    {
+        signUp();
+    }
+    else if (choice == 2)
+    {
+        logIn();
+    }
+    else
+    {
+        printf("Invalid option.\n");
     }
 
     return 0;
