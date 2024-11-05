@@ -1,27 +1,35 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "account.h"
+#include "client.h"
+#include "tools.h"
+#include "file_operations.h"
 
-void createAccount(Account *acc, int accountNumber) {
-    acc->accountNumber = accountNumber;
-    acc->balance = 0.0; 
-    FILE *file ;
-    file = fopen("managingaccounts.txt","w+");
-    if ( file == NULL ){
-        printf(" failed :'( ");
-    }
-    fprintf(file," acc num %d balance %.2f \n",acc->accountNumber,acc->balance);
-    fclose(file);
-}
-void displayAccount() {
-    FILE *file ;
-    file = fopen("managingaccounts.txt","r");
-    if ( file == NULL ){
-        printf(" failed :'( ");
-    }
-    double bal ;
-    int accnum ;
-    fscanf(file," the accountnum : %d \n balance : %.2f \n",accnum , bal);
-    printf("Account Number: %d \n", accnum);
-    printf("Balance: %.2f \n",bal);
-    fclose(file);
+void createAccount()
+{
+  Account newAccount;
+
+  printf("Creating a new account...\n");
+
+  printf("Enter your client ID: ");
+  scanf("%lld", &newAccount.ownerID);
+
+  newAccount.accountID = generateRandomAccountNumber();
+  printf("Your account ID: %lld\n", newAccount.accountID);
+
+  printf("Enter initial balance: ");
+  scanf("%f", &newAccount.balance);
+
+  int ch;
+  while ((ch = getchar()) != '\n' && ch != EOF)
+    ; // To clean the BUFFER
+
+  printf("Choose your account type: ");
+  scanf("%s", &newAccount.accountType);
+  
+  getCurrentDate(newAccount.dateCreated, sizeof(newAccount.dateCreated));
+  printf("Account Created on: %s\n", newAccount.dateCreated);
+
+  saveAccountToFile(&newAccount);
 }
