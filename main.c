@@ -15,18 +15,17 @@ int main()
 
     printf("Welcome to your BANK MANAGMENT SYSTEM\n");
     
-    int choice;
     char *Choices[] = {
         "Log in",
         "Sign up",
         "Exit",
         NULL};
 
-    choice = choose_item(Choices, "Make your choice");
+    int choice = choose_item(Choices, "Make your choice");
 
     if (choice == 0)
     {
-        logIn();
+        logIn_Client();
     }
     else if (choice == 1)
     {

@@ -10,14 +10,16 @@ typedef struct
     char name[150];
     char phoneNumber[11];
     char address[100];
+
+    char password[10];
     //  -------------------------------- 3.client Status ----------------------------------------
     int isBlacklisted;
     //  -------------------------------- 4.Metadata ---------------------------------------------
     char dateCreated[23];
 } Client;
 
-int signUp();
-int logIn();
-int createClient();
+void signUp();
+void logIn_Client();
+void createClient();
 
 #endif // CLIENT_H

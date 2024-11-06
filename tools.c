@@ -4,8 +4,8 @@
 #include <conio.h> // For _getch()
 #include <time.h>
 
-#define ACCOUNT_NUMBER_MIN 0
-#define ACCOUNT_NUMBER_MAX 9999999999
+#define ACCOUNT_NUMBER_MIN 10000
+#define ACCOUNT_NUMBER_MAX 99999
 
 long long generateRandomAccountNumber()
 {
