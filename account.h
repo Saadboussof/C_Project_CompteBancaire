@@ -1,24 +1,26 @@
+#include "client.h"
+
 #ifndef ACCOUNT_H
 #define ACCOUNT_H
 
-#include "client.h"
-
 typedef struct
 {
-  long long accountID;
-  float balance;
-  char accountType[20]; // TODO: add the list of choices :("Savings", "Checking", ...)
-  char dateCreated[23];
-  long long ownerID;
-  int isBlocked;
+    long long accountID;
+    float balance;
+    char accountType[20];
+    char dateCreated[23];
+    long long ownerID;
+    char PIN[5];
+    int isBlocked;
 
-  // float *transactionHistory;  // Pointer for transaction history (optional)
-  // int transactionCount;       // Number of transactions stored
+    // float *transactionHistory;  // Pointer for transaction history (optional)
+    // int transactionCount;       // Number of transactions stored
 
 } Account;
 
+void logIn_Account(long long ownerID);
 void createAccount();
 // void deleteAccount();
 // void displayAccount();
 
-#endif
+#endif // ACCOUNT_H

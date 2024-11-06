@@ -5,10 +5,13 @@
 
 int saveClientToFile(Client *client);
 
-int saveAccountToFile(Account *account);
+void saveAccountToFile(Account *account);
+
+Account* searchAccountsByClientID(long long ownerID, int *resultCount);
 
 void loadAccountsFromFile();
 
 void deleteAccountFromFile(long long accountNumber);
+Client *findClientByCIN(const char *CIN);
 
 #endif // FILE_OPERATIONS_H
