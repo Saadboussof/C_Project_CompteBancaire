@@ -8,28 +8,40 @@
 
 void createAccount()
 {
-  Account newAccount;
+    Account newAccount;
 
-  printf("Creating a new account...\n");
+    printf("Creating new account...\n");
 
-  printf("Enter your client ID: ");
-  scanf("%lld", &newAccount.ownerID);
+    int CIN;
+    printf("Enter your CIN: ");
+    scanf(" %8[^\n]s", CIN);
 
-  newAccount.accountID = generateRandomAccountNumber();
-  printf("Your account ID: %lld\n", newAccount.accountID);
+    // Find the client using CIN
+    Client *client = findClientByCIN(CIN);
+    if (client == NULL)
+    {
+        printf("Client not found. Please register first.\n");
+        createClient();
+        return -1;
+    }
+    
+    newAccount.ownerID = client->clientID;
 
-  printf("Enter initial balance: ");
-  scanf("%f", &newAccount.balance);
+    newAccount.accountID = generateRandomAccountNumber();
+    printf("Your account ID: %lld\n", newAccount.accountID);
 
-  int ch;
-  while ((ch = getchar()) != '\n' && ch != EOF)
-    ; // To clean the BUFFER
+    printf("Enter initial balance: DH ");
+    scanf("%f", &newAccount.balance);
 
-  printf("Choose your account type: ");
-  scanf("%s", &newAccount.accountType);
-  
-  getCurrentDate(newAccount.dateCreated, sizeof(newAccount.dateCreated));
-  printf("Account Created on: %s\n", newAccount.dateCreated);
+    int ch;
+    while ((ch = getchar()) != '\n' && ch != EOF)
+        ; // To clean the BUFFER
 
-  saveAccountToFile(&newAccount);
+    int account_type_index = choose_account_type();
+    strcpy(newAccount.accountType, ACCOUNT_TYPES[account_type_index]);
+
+    getCurrentDate(newAccount.dateCreated, sizeof(newAccount.dateCreated));
+    printf("Account Created on: %s\n", newAccount.dateCreated);
+
+    saveAccountToFile(&newAccount);
 }

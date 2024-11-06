@@ -10,8 +10,6 @@ typedef struct
     char name[150];             
     char phoneNumber[11];
     char address[100];
-//  -------------------------------- 3.Account Credentials ----------------------------------
-    char password[50];
 //  -------------------------------- 4.client Status ----------------------------------------    
     int isBlacklisted;
 //  -------------------------------- 5.Metadata ---------------------------------------------
@@ -21,4 +19,4 @@ typedef struct
 
 int createClient();
 
-#endif
+#endif // CLIENT_H

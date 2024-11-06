@@ -10,26 +10,29 @@ int main()
 {
     srand(time(NULL)); // Seed the random number generator
 
-    printf("Welcome to your BANK MANAGMENT SYSTEM");
+    printf("Welcome to your BANK MANAGMENT SYSTEM\n");
 
     int choice;
+    char *Choices[] = {
+        "Log in",
+        "Sign up",
+        "Exit"};
 
-    printf("1. Sign Up\n");
-    printf("2. Log In\n");
-    printf("Choose an option: ");
-    scanf("%d", &choice);
+    choice = choose_item(Choices, "Make your choice");
 
     if (choice == 1)
     {
-        signUp();
+        // signUp();
+        printf("Sign up");
     }
     else if (choice == 2)
     {
-        logIn();
+        // logIn();
+        printf("Log in");
     }
     else
     {
-        printf("Invalid option.\n");
+        printf("Exit");
     }
 
     return 0;

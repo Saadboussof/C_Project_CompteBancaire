@@ -5,34 +5,34 @@
 
 char CIN[9];
 
-int logIn()
-{
-    printf("Enter CIN to log in: ");
-    scanf(" %8[^\n]s", CIN);
+// int logIn()
+// {
+//     printf("Enter CIN to log in: ");
+//     scanf(" %8[^\n]s", CIN);
 
-    // Find the client using CIN
-    Client *client = findClientByCIN(CIN);
-    if (client == NULL)
-    {
-        printf("Client with CIN %s not found.\n", CIN);
-        return -1;
-    }
+//     // Find the client using CIN
+//     Client *client = findClientByCIN(CIN);
+//     if (client == NULL)
+//     {
+//         printf("Client with CIN %s not found.\n", CIN);
+//         return -1;
+//     }
 
-    char password[50];
-    printf("Enter password: ");
-    scanf(" %49[^\n]s", password);
+//     char password[50];
+//     printf("Enter password: ");
+//     scanf(" %49[^\n]s", password);
 
-    if (strcmp(client->password, password) == 0)
-    {
-        printf("Login successful! Welcome, %s.\n", client->name);
-        return 0;
-    }
-    else
-    {
-        printf("Incorrect password. Please try again.\n");
-        return -1;
-    }
-}
+//     if (strcmp(client->password, password) == 0)
+//     {
+//         printf("Login successful! Welcome, %s.\n", client->name);
+//         return 0;
+//     }
+//     else
+//     {
+//         printf("Incorrect password. Please try again.\n");
+//         return -1;
+//     }
+// }
 
 int signUp()
 {
@@ -78,9 +78,6 @@ int createClient()
 
     printf("Enter Client Address: ");
     scanf(" %[^\n]s", newClient.address);
-
-    printf("Set a password: ");
-    scanf(" %49[^\n]s", newClient.password);
 
     newClient.isBlacklisted = 0;
 
