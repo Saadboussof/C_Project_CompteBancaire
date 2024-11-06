@@ -13,7 +13,7 @@ int main()
 {
     srand(time(NULL)); // Seed the random number generator
 
-    printf("-----Welcome to your BANK MANAGMENT SYSTEM------\n");
+    printf("Welcome to your BANK MANAGMENT SYSTEM\n");
     
     int choice;
     char *Choices[] = {
@@ -26,11 +26,11 @@ int main()
 
     if (choice == 0)
     {
-        printf("Log in");
+        logIn();
     }
     else if (choice == 1)
     {
-        printf("Sign up");
+        signUp();
     }
     else if (choice == 2)
     {

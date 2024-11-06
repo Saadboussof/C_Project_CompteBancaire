@@ -4,57 +4,66 @@
 #include "tools.h"
 #include "file_operations.h"
 
-char CIN[9];
+char CIN[9] = {
+    '\0',
+};
 
-// int logIn()
-// {
-//     printf("Enter CIN to log in: ");
-//     scanf(" %8[^\n]s", CIN);
+int logIn()
+{
 
-//     // Find the client using CIN
-//     Client *client = findClientByCIN(CIN);
-//     if (client == NULL)
-//     {
-//         printf("Client with CIN %s not found.\n", CIN);
-//         return -1;
-//     }
+    if (!strcmp(CIN, "\0"))
+    {
+        printf("Enter CIN to log in: ");
+        scanf(" %8[^\n]s", CIN);
+    }
 
-//     char password[50];
-//     printf("Enter password: ");
-//     scanf(" %49[^\n]s", password);
+    // Find the client using CIN
+    Client *client = findClientByCIN(CIN);
+    if (client == NULL)
+    {
+        printf("Client with CIN %s not found.\n", CIN);
+        signUp();
+        return -1;
+    }
 
-//     if (strcmp(client->password, password) == 0)
-//     {
-//         printf("Login successful! Welcome, %s.\n", client->name);
-//         return 0;
-//     }
-//     else
-//     {
-//         printf("Incorrect password. Please try again.\n");
-//         return -1;
-//     }
-// }
+    // char password[50];
+    // printf("Enter password: ");
+    // scanf(" %49[^\n]s", password);
+
+    // if (strcmp(client->password, password) == 0)
+    // {
+    //     printf("Login successful! Welcome, %s.\n", client->name);
+    //     return 0;
+    // }
+    // else
+    // {
+    //     printf("Incorrect password. Please try again.\n");
+    //     return -1;
+    // }
+}
 
 int signUp()
 {
-    printf("Enter CIN for new client: ");
-    scanf(" %8[^\n]s", CIN);
+    if (!strcmp(CIN, "\0"))
+    {
+        printf("Enter CIN for new client: ");
+        scanf(" %8[^\n]s", CIN);
+    }
 
     // Check if client already exists
     if (findClientByCIN(CIN) != NULL)
     {
-        printf("Client with CIN %s already exists. Please log in.\n", CIN);
+        printf("Client with CIN %s already exists.\n", CIN);
+        logIn();
         return -1;
     }
 
     if (createClient() == 0)
     {
-        printf("Sign-up successful!\n");
         return 0;
     }
     else
     {
-        printf("Failed to create client.\n");
         return -1;
     }
 }
@@ -87,12 +96,10 @@ int createClient()
 
     if (saveClientToFile(&newClient) == 0)
     {
-        printf("Client saved successfully!\n");
         return 0;
     }
     else
     {
-        printf("Failed to save client.\n");
         return -1;
     }
 }

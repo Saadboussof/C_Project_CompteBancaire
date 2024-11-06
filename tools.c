@@ -37,7 +37,6 @@ int choose_item(char **items, char *title) {
     }
 
     while (1) {
-        // system("cls");
 
         printf(BOLD YELLOW "%s:\n" RESET, title);
 
