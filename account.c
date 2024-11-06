@@ -6,13 +6,21 @@
 #include "tools.h"
 #include "file_operations.h"
 
+char *ACCOUN_TYPES[] = {
+    "Savings Account",
+    "Checking Account",
+    "Business Account",
+    "Joint Account",
+    "Student Account",
+    NULL};
+
 void createAccount()
 {
     Account newAccount;
 
     printf("Creating new account...\n");
 
-    int CIN;
+    char CIN[9];
     printf("Enter your CIN: ");
     scanf(" %8[^\n]s", CIN);
 
@@ -22,9 +30,9 @@ void createAccount()
     {
         printf("Client not found. Please register first.\n");
         createClient();
-        return -1;
+        return;
     }
-    
+
     newAccount.ownerID = client->clientID;
 
     newAccount.accountID = generateRandomAccountNumber();
@@ -37,8 +45,8 @@ void createAccount()
     while ((ch = getchar()) != '\n' && ch != EOF)
         ; // To clean the BUFFER
 
-    int account_type_index = choose_account_type();
-    strcpy(newAccount.accountType, ACCOUNT_TYPES[account_type_index]);
+    int account_type_index = choose_item(ACCOUN_TYPES, "Types of account");
+    strcpy(newAccount.accountType, ACCOUN_TYPES[account_type_index]);
 
     getCurrentDate(newAccount.dateCreated, sizeof(newAccount.dateCreated));
     printf("Account Created on: %s\n", newAccount.dateCreated);

@@ -2,6 +2,7 @@
 #include <string.h>
 #include "client.h"
 #include "tools.h"
+#include "file_operations.h"
 
 char CIN[9];
 

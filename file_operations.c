@@ -1,7 +1,6 @@
 #include <stdio.h>
+#include <string.h>
 #include "file_operations.h"
-#include <stdio.h>
-#include <ctype.h>
 
 /*
 int convertBinaryToText(const char *binaryFileName, const char *textFileName)
@@ -113,7 +112,7 @@ void loadAccountsFromFile()
     return;
   }
 
-  printf("\n-------------------Accounts:-------------------\n");
+  printf("\n------------------- Accounts -------------------\n");
 
   Account account;
   while (fread(&account, sizeof(Account), 1, file) == 1)
@@ -135,7 +134,7 @@ void loadClientsFromFile()
     return;
   }
 
-  printf("\n-------------------Clients:-------------------\n");
+  printf("\n------------------- Clients -------------------\n");
 
   Client client;
   while (fread(&client, sizeof(Client), 1, file) == 1)

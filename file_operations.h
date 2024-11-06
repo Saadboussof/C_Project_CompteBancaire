@@ -10,5 +10,6 @@ int saveAccountToFile(Account *account);
 void loadAccountsFromFile();
 
 void deleteAccountFromFile(long long accountNumber);
+Client *findClientByCIN(const char *CIN);
 
 #endif // FILE_OPERATIONS_H
