@@ -13,7 +13,7 @@ int logIn()
 
     if (!strcmp(CIN, "\0"))
     {
-        printf("Enter CIN to log in: ");
+        printf("Enter CIN to log in please: ");
         scanf(" %8[^\n]s", CIN);
     }
 
