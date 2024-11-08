@@ -24,8 +24,10 @@ void handleAccountBlocking(Account *account);
 Account *searchAccountsByClientID(long long ownerID, int *resultCount);
 void saveAccountToFile(Account *account);
 void deleteAccountFromFile(long long accountNumber);
+void displayAllAccounts();
 
 // void deleteAccount();
 
+// il faut ajouter une fonction qui permet de stocker des info format text pour les imprimer
 
 #endif // ACCOUNT_H

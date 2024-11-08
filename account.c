@@ -7,6 +7,8 @@
 #include "file_operations.h"
 
 #define GUESSING_LIMIT 3
+#define RED "\033[31m"
+#define RESET "\033[0m"
 
 void logIn_Account(long long ownerID);
 void createAccount();
@@ -14,6 +16,7 @@ void displayAccountDetails(const Account *account);
 void handleAccountBlocking(Account *account);
 Account *searchAccountsByClientID(long long ownerID, int *resultCount);
 void saveAccountToFile(Account *account);
+void displayAllAccounts();
 
 // allowes the client to select an account by client ID and display its details after verifying their PIN, checking if the account is blocked, and providing the option to create a new account if none exist or want to.
 void logIn_Account(long long ownerID)
@@ -62,7 +65,7 @@ void logIn_Account(long long ownerID)
 
         if (selectedAccount.isBlocked)
         {
-            printf("This account is blocked. You cannot log in.\n");
+            printf(RED"This account is blocked. You cannot log in.\n"RESET);
             printf("To unblock your account, please visit our bank during working hours: 9:00 AM to 5:00 PM.\n");
             printf("Please select another account.\n");
             continue; // Skip the rest of the loop and ask the user to choose another account
@@ -122,7 +125,7 @@ void displayAccountDetails(const Account *account)
 void handleAccountBlocking(Account *account)
 {
     account->isBlocked = 1; // Mark the account as blocked
-    printf("Your account has been blocked due to too many incorrect attempts.\n");
+    printf(RED"Your account has been blocked due to too many incorrect attempts.\n"RESET);
     deleteAccountFromFile(account->accountID);
     saveAccountToFile(account);
 }
@@ -315,4 +318,41 @@ void deleteAccountFromFile(long long accountID)
         remove("temp.dat");
         printf("Account not found.\n");
     }
+}
+
+void displayAllAccounts()
+{
+    FILE *file = fopen("accounts.dat", "rb");
+    if (file == NULL)
+    {
+        printf(RED "Error: Unable to open the accounts file.\n" RESET);
+        return;
+    }
+
+    Account account;
+    int accountCount = 0;
+
+    printf("--------------- All Accounts ---------------\n");
+    while (fread(&account, sizeof(Account), 1, file) == 1)
+    {
+        printf("Account #%d\n", ++accountCount);
+        printf("Account ID     : %lld\n", account.accountID);
+        printf("Owner ID       : %lld\n", account.ownerID);
+        printf("Balance        : %.2f DH\n", account.balance);
+        printf("Account Type   : %s\n", account.accountType);
+        printf("Account Status : %s\n", account.isBlocked ? "Blocked" : "Active");
+        printf("Date Created   : %s\n", account.dateCreated);
+        printf("-------------------------------------------\n");
+    }
+
+    if (accountCount == 0)
+    {
+        printf("No accounts found.\n");
+    }
+    else
+    {
+        printf("Total Accounts: %d\n", accountCount);
+    }
+
+    fclose(file);
 }

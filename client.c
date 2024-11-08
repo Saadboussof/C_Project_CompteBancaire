@@ -8,6 +8,7 @@
 
 #define attemptCount_LIMIT 3
 #define CYAN "\033[0;36m"
+#define RED "\033[31m"
 #define RESET "\033[0m"
 
 char CIN[9] = {'\0'};

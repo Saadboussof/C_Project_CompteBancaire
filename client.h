@@ -11,6 +11,7 @@ typedef struct
     char PIN[5];
     int isBlacklisted;
     char dateCreated[23];
+    // int role;   to add employees
 } Client;
 
 void logIn_Client();
