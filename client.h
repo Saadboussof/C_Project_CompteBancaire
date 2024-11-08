@@ -3,23 +3,23 @@
 
 typedef struct
 {
-    //  -------------------------------- 1.Identification Fields --------------------------------
     long long clientID;
     char CIN[9];
-    //  -------------------------------- 2.Personal Information ---------------------------------
     char name[150];
     char phoneNumber[11];
     char address[100];
-
-    char password[10];
-    //  -------------------------------- 3.client Status ----------------------------------------
+    char PIN[5];
     int isBlacklisted;
-    //  -------------------------------- 4.Metadata ---------------------------------------------
     char dateCreated[23];
 } Client;
 
-void signUp();
 void logIn_Client();
+void signUp();
+Client *findClientByCIN(char *CIN);
+void authenticateClient(Client *client);
+void requestCIN();
 void createClient();
+void saveClientToFile(Client *client);
+void displayClientDetails(Client *client);
 
 #endif // CLIENT_H

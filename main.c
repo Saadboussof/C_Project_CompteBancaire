@@ -12,9 +12,8 @@
 int main()
 {
     srand(time(NULL)); // Seed the random number generator
-
     printf("Welcome to your BANK MANAGMENT SYSTEM\n");
-    
+
     char *Choices[] = {
         "Log in",
         "Sign up",
@@ -22,7 +21,6 @@ int main()
         NULL};
 
     int choice = choose_item(Choices, "Make your choice");
-
     if (choice == 0)
     {
         logIn_Client();
@@ -31,10 +29,9 @@ int main()
     {
         signUp();
     }
-    else if (choice == 2)
+    else
     {
-        printf("Exit");
+        exit(0);
     }
-
     return 0;
 }
