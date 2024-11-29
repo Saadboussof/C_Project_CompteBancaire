@@ -83,7 +83,7 @@ bool setAndConfirmPIN(char *PIN) {
         // Step 1: Set the PIN
         while (!check) {
             printf("Set a 4-digit PIN: ");
-            PIN_hide(PIN, sizeof(PIN));
+            PIN_hide(PIN, sizeof(tempPIN));
             check = (strlen(PIN) == 4) && isNumericString(PIN);
             if (!check) {
                 printf("Invalid PIN. Please ensure it is a 4-digit number.\n");

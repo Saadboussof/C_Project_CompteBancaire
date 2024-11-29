@@ -1,5 +1,6 @@
 {
   "files.associations": {
-    "file_operations.h": "c"
-}
+    "file_operations.h": "c",
+    "ctype.h": "c"
+  }
 }

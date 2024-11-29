@@ -1,17 +1,11 @@
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <time.h>
 #include "tools.h"
 #include "client.h"
 #include "account.h"
 
-void main();
-
 void main()
 {
     srand(time(NULL)); // Seed the random number generator
-    printf("Welcome to your BANK MANAGMENT SYSTEM\n");
+    printf(CYAN "Welcome to your BANK MANAGMENT SYSTEM\n" RESET);
 
     char *Choices[] = {
         "Client Portal",

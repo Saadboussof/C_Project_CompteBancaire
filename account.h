@@ -1,7 +1,10 @@
-#include "client.h"
-
 #ifndef ACCOUNT_H
 #define ACCOUNT_H
+
+#include "tools.h"
+
+#define GUESSING_LIMIT 3
+#define expdate 8
 typedef struct
 {
     char cardNumber[17];       // Numéro de la carte (16 chiffres + '\0')
@@ -28,19 +31,16 @@ typedef struct
 
 } Account;
 
+Account *searchAccountsByClientID(long long ownerID, int *resultCount);
 void logIn_Account(long long ownerID);
+int authenticate_account(Account *selectedAccount);
 void creatingAccountRequest(long long ownerID);
-void displayAccountDetails(const Account *account);
+void displayAccountDetails(Account *account);
 void handleAccountBlocking(Account *account);
 void requestBankCard(Account *account);
-void saveRequestaccountToFile(const Account *newRequest);
-Account *searchAccountsByClientID(long long ownerID, int *resultCount);
+void displayBankCardInfo(BankCard *bankCard);
 void saveAccountToFile(Account *account);
 void displayAllAccounts();
 void deleteAccountFromFile(long long accountID);
-
-// void deleteAccount();
-
-// il faut ajouter une fonction qui permet de stocker des info format text pour les imprimer
 
 #endif // ACCOUNT_H

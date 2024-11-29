@@ -1,7 +1,14 @@
 #ifndef TOOLS_H
 #define TOOLS_H
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+#include <time.h>
 #include <stdbool.h>
+#include "client.h"
+#include "account.h"
 
 // Define ANSI color codes for highlighting and style
 #define CYAN "\033[0;36m"
@@ -15,6 +22,8 @@
 #define WHITE "\033[37m"
 #define BOLD "\033[1m"
 
+
+void main();
 long long generateRandomAccountNumber();
 void getCurrentDate(char *buffer, size_t bufferSize);
 int choose_item(char **items, char *title);
