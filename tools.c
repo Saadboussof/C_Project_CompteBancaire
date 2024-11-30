@@ -1,19 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
+#include <ctype.h>
 #include <conio.h> // For _getch()
 #include <time.h>
+#include "tools.h"
 
 // Define the limites for generateRandomAccountNumber
 #define ACCOUNT_NUMBER_MIN 10000
 #define ACCOUNT_NUMBER_MAX 99999
-// Define ANSI color codes for highlighting and style
-#define RESET "\033[0m"
-#define GREEN "\033[32m"
-#define YELLOW "\033[33m"
-#define WHITE "\033[37m"
-#define BOLD "\033[1m"
-
 
 long long generateRandomAccountNumber()
 {
@@ -79,6 +75,34 @@ int choose_item(char **items, char *title)
     }
 }
 
+bool setAndConfirmPIN(char *PIN) {
+    char tempPIN[5] = "\0";
+    bool check = false;
+
+    while (1) {
+        // Step 1: Set the PIN
+        while (!check) {
+            printf("Set a 4-digit PIN: ");
+            PIN_hide(PIN, sizeof(tempPIN));
+            check = (strlen(PIN) == 4) && isNumericString(PIN);
+            if (!check) {
+                printf("Invalid PIN. Please ensure it is a 4-digit number.\n");
+            }
+        }
+        check = false;
+
+        // Step 2: Confirm the PIN
+        printf("Confirm your PIN: ");
+        PIN_hide(tempPIN, sizeof(tempPIN));
+
+        if (!validatePIN(PIN, tempPIN)) {
+            printf("PINs do not match. Try again.\n");
+        } else {
+            return true; // PIN successfully set
+        }
+    }
+}
+
 void PIN_hide(char *PIN, int max_length)
 {
     int i = 0;
@@ -104,4 +128,37 @@ void PIN_hide(char *PIN, int max_length)
 int validatePIN(const char *enteredPIN, const char *correctPIN)
 {
     return strcmp(enteredPIN, correctPIN) == 0;
+}
+
+// Function to check if a string contains only alphabetic characters
+int isAlphaString(char *str)
+{
+    for (int i = 0; str[i] != '\0'; i++)
+    {
+        if (!isalpha(str[i])) // If any character is not alphabetic, return 0
+            return 0;
+    }
+    return 1; // All characters are alphabetic
+}
+
+// Function to check if a string contains only numeric characters
+int isNumericString(char *str)
+{
+    for (int i = 0; str[i] != '\0'; i++)
+    {
+        if (!isdigit(str[i])) // If any character is not numeric, return 0
+            return 0;
+    }
+    return 1; // All characters are numeric
+}
+
+// Function to check if a string contains only alphanumeric characters
+int isAlphanumericString(char *str)
+{
+    for (int i = 0; str[i] != '\0'; i++)
+    {
+        if (!isalnum(str[i])) // If any character is not alphanumeric, return 0
+            return 0;
+    }
+    return 1; // All characters are alphanumeric
 }

@@ -1,39 +1,34 @@
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <time.h>
 #include "tools.h"
 #include "client.h"
 #include "account.h"
-#include "file_operations.h"
 
-
-
-int main()
+void main()
 {
     srand(time(NULL)); // Seed the random number generator
-    printf("Welcome to your BANK MANAGMENT SYSTEM\n");
+    printf(CYAN "Welcome to your BANK MANAGMENT SYSTEM\n" RESET);
 
     char *Choices[] = {
-        "Log in",
-        "Sign up",
+        "Client Portal",
+        "Manager Dashboard",
+        "Employee Dashboard",
         "Exit",
         NULL};
 
     int choice = choose_item(Choices, "Make your choice");
-    if (choice == 0)
-    {
-        logIn_Client();
-    }
-    else if (choice == 1)
-    {
-        signUp();
-    }
-    else
-    {
-        exit(0);
-    }
 
-    // displayAllAccounts();
-    return 0;
+    switch (choice)
+    {
+    case 0:
+        Client_Portal();
+        break;
+    case 1:
+        printf("Manager Dashboard");
+        break;
+    case 2:
+        printf("Employee Dashboard");
+        break;
+    default:
+        exit(0);
+        break;
+    }
 }
