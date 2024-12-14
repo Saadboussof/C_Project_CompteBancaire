@@ -5,11 +5,14 @@
 void main()
 {
     srand(time(NULL)); // Seed the random number generator
-    printf(CYAN "Welcome to your BANK MANAGMENT SYSTEM\n" RESET);
+
+    // displayAllClients(1, 1);
+
+    // displaySpectacularLoadingBar(50);
+    // printf(CYAN "\n\n\n\t\t\t\xB2\xB2\xB2\xB2\xB2\xB2\xB2 Welcome to your BANK MANAGMENT SYSTEM \xB2\xB2\xB2\xB2\xB2\xB2\xB2\n\n\n" RESET);
 
     char *Choices[] = {
         "Client Portal",
-        "Manager Dashboard",
         "Employee Dashboard",
         "Exit",
         NULL};
@@ -23,9 +26,6 @@ void main()
         break;
     case 1:
         printf("Manager Dashboard");
-        break;
-    case 2:
-        printf("Employee Dashboard");
         break;
     default:
         exit(0);

@@ -1,6 +1,5 @@
 #include "account.h"
 
-
 // Select client's account : Log in by PIN if not blocked, New account creation, update profile
 
 void logIn_Account(long long ownerID)
@@ -8,8 +7,8 @@ void logIn_Account(long long ownerID)
     int resultCount = 0;
 
     Account *accounts = searchAccountsByClientID(ownerID, &resultCount);
-    if (resultCount == 0)
-    {
+
+    if (resultCount == 0) {
         printf(BLUE "No accounts found. Creating a new account...\n" RESET);
         creatingAccountRequest(ownerID);
         return;
@@ -30,8 +29,8 @@ void logIn_Account(long long ownerID)
             snprintf(accountOptions[i], 50, "Account %d", i + 1);
         }
     }
-    accountOptions[resultCount] = "Create new account";
-    accountOptions[resultCount + 1] = "Update your client profile";
+    accountOptions[resultCount] = ORANGE "Create new account" RESET;
+    accountOptions[resultCount + 1] = CYAN "Update your client profile" RESET;
     accountOptions[resultCount + 2] = NULL;
 
     int accountSelected = 0;
@@ -65,10 +64,21 @@ void logIn_Account(long long ownerID)
 
         if (authenticate_account(&selectedAccount))
         {
-            displayAccountDetails(&selectedAccount);
-            selectedAccount.bankCard = malloc(sizeof(BankCard));
-            displayBankCardInfo(selectedAccount.bankCard);
-            return;
+            gradientSpinner(50); // 50 ms per frame
+
+            displayAccountDetails(selectedAccount);
+            
+            char response[2];
+            printf(ORANGE "Would you like to display your bank card information? (y/n): " RESET);
+            scanf("%1s", response);
+
+            // Convert input to lowercase for easier comparison
+            response[0] = tolower(response[0]);
+
+            if (strcmp(response, "y") == 0) displayBankCardInfo(selectedAccount);
+            accountSelected = 1; // Mark account as successfully selected
+            // break;
+            rechargeOnline(&selectedAccount);
         }
 
         for (int i = 0; i < resultCount; i++)
@@ -105,7 +115,6 @@ int authenticate_account(Account *selectedAccount)
         printf(RED "Your account has been blocked due to too many incorrect attempts.\n" RESET);
     }
     return 0;
-
 }
 
 void handleAccountBlocking(Account *account)
@@ -126,40 +135,20 @@ char *ACCOUNT_TYPES[] = {
 void creatingAccountRequest(long long ownerID)
 {
     Account newAccount;
-    
+
     newAccount.ownerID = ownerID;
 
     // The balance of a new Account is 0.00 and it's unblocked.
     newAccount.balance = 0.00;
-    
+
     newAccount.isBlocked = 0;
 
     // Select account type:
     int account_type_index = choose_item(ACCOUNT_TYPES, "Types of account");
     strcpy(newAccount.accountType, ACCOUNT_TYPES[account_type_index]);
 
-    // PIN setting: 
-    int check;
-    char PIN[5];
-    while (1)
-    {
-        while (!check)
-        {
-            printf("Set a 4-digit PIN: ");
-            PIN_hide(newAccount.PIN, sizeof(newAccount.PIN));
-            check = ((strlen(newAccount.PIN) == 4) && isNumericString(newAccount.PIN));
-        }
-        check = 0;
-        
-        printf("Confirme your PIN: ");
-        PIN_hide(PIN, sizeof(PIN));
-        
-        if (!validatePIN(newAccount.PIN, PIN))
-            printf(RED "PIN incorrect.\n" RESET "Try again.\n");
-        
-        else
-            break;
-    }
+    // PIN setting:
+    setAndConfirmPIN(newAccount.PIN);
 
     // Generate a random account ID and set creation date:
     newAccount.accountID = generateRandomAccountNumber();
@@ -169,22 +158,28 @@ void creatingAccountRequest(long long ownerID)
     printf("Account created on: %s\n", newAccount.dateCreated);
 
     // Ask if the client wants a bank card
-    requestBankCard(&newAccount);
+    requestBankCard(newAccount);
 
     // Save the request of account creation in the request file:
     saveAccountToFile(&newAccount);
+
+    typingEffect(YELLOW "Request Creation...\n" RESET, 50);
+    typingEffect(BLUE "Request Processing...\n" RESET, 50);
+    typingEffect(GREEN "Request Submission...\n" RESET, 50);
+    printf(BOLD "Done!\n" RESET);
 
     printf(GREEN "Your account creation request has been submitted successfully!\n" RESET);
 }
 
 char *CARD_TYPES[] = {
-    "Visa",
-    "Mastercard",
-    "American Express",
-    "Discover",
+    "Visa",             // 1111
+    "Mastercard",       // 2222
+    "American Express", // 3333
+    "Discover",         // 4444
     NULL};
 
-void requestBankCard(Account *account) {
+void requestBankCard(Account account)
+{
     char response[2];
     printf(BLUE "Would you like to request a bank card? (y/n): " RESET);
     scanf("%1s", response);
@@ -192,71 +187,77 @@ void requestBankCard(Account *account) {
     // Convert input to lowercase for easier comparison
     response[0] = tolower(response[0]);
 
-    if (strcmp(response, "y") == 0) {
-        // Allocate memory for BankCard
-        account->bankCard = (BankCard *)malloc(sizeof(BankCard));
-
+    if (strcmp(response, "y") == 0)
+    {
+        BankCard bankcard;
         // Display card types for the user to choose
         int cardTypeIndex = choose_item(CARD_TYPES, "Choose a card type");
-        strcpy(account->bankCard->typeCarte, CARD_TYPES[cardTypeIndex]);
+        strcpy(bankcard.cardtype, CARD_TYPES[cardTypeIndex]);
 
         // Fetch the cardholder's name based on the owner's ID
-        Client *client = findClient("0", account->ownerID, 0);
-        strcpy(account->bankCard->cardHolderName, client->name);
+        Client *client = findClient("0", account.ownerID, 0);
+        strcpy(bankcard.cardHolderName, client->name);
 
         // Calculate expiry date ("expdate" years from the current date)
-        char currentDate[20];
+        char currentDate[23];
         getCurrentDate(currentDate, sizeof(currentDate));
-
+        
         // Extract the year from current date and add "expdate" years to it
         int currentYear = atoi(currentDate);
+
         int expiryYear = currentYear + expdate;
 
         // Format expiry date (MM/YY)
         int expiryMonth = atoi(&currentDate[5]); // Extract month from "YYYY-MM-DD"
-        snprintf(account->bankCard->expiryDate, sizeof(account->bankCard->expiryDate), "%02d/%02d", expiryMonth, expiryYear % 100);
+
+        snprintf(bankcard.expiryDate, sizeof(bankcard.expiryDate), "%02d/%02d", expiryMonth, expiryYear % 100);
 
         // Randomly generate CVV (3 digits)
-        snprintf(account->bankCard->cvv, sizeof(account->bankCard->cvv), "%03d", rand() % 1000);
+        int a;
+        switch (cardTypeIndex)
+        {
+        case 0:
+            a = 1111;
+            break;
+        case 1:
+            a = 2222;
+            break;
+        case 2:
+            a = 3333;
+            break;
+        case 3:
+            a = 4444;
+            break;
+        default:
+            a = 1234; // just a random value
+            break;
+        }
+        snprintf(bankcard.cvv, sizeof(bankcard.cvv), "%03d", rand() % 1000);
 
         // Generate the full card number using the account ID and random digits
-        snprintf(account->bankCard->cardNumber, sizeof(account->bankCard->cardNumber), "4000%lld%04d", account->accountID, rand() % 10000);
+        snprintf(bankcard.cardNumber, sizeof(bankcard.cardNumber), "%d%lld%lld%02d", a, account.accountID, account.ownerID, rand() % 100);
 
+        // The balance of a new Bank card is 0.00.
+        bankcard.cardbalance = 0.00;        
 
         // Set card as not blocked (default is unblocked)
-        account->bankCard->cardBlocked = 0;
+        bankcard.cardBlocked = 0;
 
         // Prompt for a PIN for the card
-        int check;
-        char PIN[5];
-        while (1)
-        {
-            while (!check)
-            {
-                printf("Set a 4-digit PIN for your card: ");
-                PIN_hide(account->bankCard->PIN, sizeof(account->bankCard->PIN));
-                check = ((strlen(account->bankCard->PIN) == 4) && isNumericString(account->bankCard->PIN));
-            }
-            check = 0;
-            
-            printf("Confirme your PIN: ");
-            PIN_hide(PIN, sizeof(PIN));
-            
-            if (!validatePIN(account->bankCard->PIN, PIN))
-                printf(RED "PIN incorrect.\nTry again.\n" RESET);
-            
-            else
-                break;
-        }
+        setAndConfirmPIN(bankcard.PIN);
+     
+        bankcard.cardaccountID = account.accountID;
 
         // Inform the client that the card request is successful
-        printf(GREEN "Your card request has been successfully submitted.\nYou can collect it at the bank once approved.\n" RESET);
-    } 
-    else if (strcmp(response, "n") == 0) {
+        printf(GREEN "Your card request has been successfully submitted.\n" RESET "You can collect it at the bank once approved.\n");
+        saveBankCardToFile(&bankcard);
+    }
+    else if (strcmp(response, "n") == 0)
+    {
         printf(ORANGE "You have declined the bank card request.\n" RESET);
-    } 
-    else {
+    }
+    else
+    {
         printf(RED "Invalid response. Please answer 'y' or 'n'.\n" RESET);
     }
-
 }

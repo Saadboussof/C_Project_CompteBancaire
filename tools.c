@@ -5,6 +5,7 @@
 #include <ctype.h>
 #include <conio.h> // For _getch()
 #include <time.h>
+#include <unistd.h> // For usleep()
 #include "tools.h"
 
 // Define the limites for generateRandomAccountNumber
@@ -162,3 +163,101 @@ int isAlphanumericString(char *str)
     }
     return 1; // All characters are alphanumeric
 }
+
+void fordelay(int j)
+{
+  int i, k;
+  for (i = 0; i < j; i++)
+    k = i;
+}
+
+void displaySpectacularLoadingBar(int duration) 
+{
+    const int barWidth = 40; // Width of the progress bar
+    char spinner[] = "|/-\\"; // Spinner animation
+    int spinnerIndex = 0;     // Index for spinner animation
+
+    printf("\n\n");
+    printf(CYAN "Starting the application... Please wait.\n\n" RESET);
+
+    // Loading bar
+    for (int progress = 0; progress <= 100; progress++) {
+        int pos = (progress * barWidth) / 100; // Calculate current position in the bar
+
+        // Color gradient based on progress
+        const char *color;
+        if (progress < 25)
+            color = RED;
+        else if (progress < 50)
+            color = YELLOW;
+        else if (progress < 75)
+            color = GREEN;
+        else
+            color = CYAN;
+
+        // Dynamic loading message
+        const char *message;
+        if (progress < 25)
+            message = "Initializing...";
+        else if (progress < 50)
+            message = "Loading Modules...";
+        else if (progress < 75)
+            message = "Almost Ready...";
+        else
+            message = "Finalizing...";
+
+        // Clear the current line and print the loading bar
+        printf("\r%s[", color);
+        for (int i = 0; i < barWidth; i++) {
+            if (i < pos) {
+                printf("#"); // Filled blocks
+            } else {
+                printf(" "); // Empty space
+            }
+        }
+        printf("] %d%% %c %s" RESET, progress, spinner[spinnerIndex], message);
+
+        // Update the spinner animation
+        spinnerIndex = (spinnerIndex + 1) % 4;
+
+        fflush(stdout); // Force immediate output
+
+        // Delay to simulate loading
+        usleep(duration * 1000);
+    }
+
+    printf("\n\n");
+    printf(GREEN "Application loaded successfully! Enjoy your experience. \n" RESET);
+    printf("\n\n");
+}
+
+// Gradient color array
+const char *colors[] = {RED, YELLOW, GREEN, CYAN, BLUE, MAGENTA};
+
+void gradientSpinner(int duration) {
+    char spinner[] = "|/-\\";
+    int spinnerIndex = 0;
+
+    printf("\nAccessing Account...\n");
+
+    for (int i = 0; i < 100; i++) {
+        printf("\r%s%c " RESET "Loading... %d%%", colors[i % 6], spinner[spinnerIndex], i + 1);
+
+        fflush(stdout);
+        spinnerIndex = (spinnerIndex + 1) % 4;
+        usleep(duration * 1000); // Adjust speed
+    }
+
+    printf("\nDone!\n");
+}
+
+void typingEffect(const char *text, int speed) {
+    for (int i = 0; i < strlen(text); i++) {
+        printf("%c", text[i]);
+        fflush(stdout);
+        usleep(speed * 1000);
+    }
+    printf("\n");
+}
+
+

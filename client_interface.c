@@ -107,7 +107,13 @@ void logIn_Client()
     if ( authenticateClient(client)  &&  checkClientApprovalStatus(client) ) 
     {
         // If no issues, grant access
-        printf(CYAN "\nWelcome, %s! Accessing BANK MANAGEMENT SYSTEM...\n" RESET, client->name);
+        printf(CYAN "\nWelcome, %s!\nAccessing BANK MANAGEMENT SYSTEM" RESET, client->name);
+        for (int i = 0; i <= 6; i++)
+            {
+                fordelay(100000000);
+                printf(CYAN BOLD "." RESET);
+            }
+        printf("\n");
         displayClientDetails(client);
         logIn_Account(client->clientID);
     };
@@ -125,7 +131,7 @@ int authenticateClient(Client *client)
 
         if (validatePIN(client->PIN, PIN)) 
         {
-            printf (GREEN "Correct PIN\n" RESET);
+            printf(GREEN "Correct PIN\n" RESET);
             return 1;
         }
         else
@@ -160,16 +166,14 @@ void signUpRequest()
         requestCIN();
     }
 
-    if (findClient(CIN, 0, 1) != NULL)
-    {
-        printf(BLUE "No client with CIN : %s found.\nRedirecting to login...\n" RESET);
+    if (findClient(CIN, 0, 1) != NULL) {
+        printf(BLUE "Client with CIN : %s already existe.\nRedirecting to login...\n" RESET , CIN);
         logIn_Client();
-    }
-    else
-    {
+    } else{
         Client newClient = createClient();
         saveClientToFile(&newClient);
     }
+
 }
 
 Client createClient()
@@ -179,14 +183,15 @@ Client createClient()
 
     printf(BLUE "Requesting client creation...\n" RESET);
 
-    while (!check)
-    {
+    // while (!check)
+    // {
         printf("Enter Client Name: ");
         scanf(" %[^\n]", newClient.name);
-        check = isAlphaString(newClient.name);
-        if (!check) printf(RED "Invalide name please try again.\n" RESET);
-    }
-    check = false;
+        // fgets(newClient.name, sizeof(newClient.name) , stdin);
+    //     check = isAlphaString(newClient.name);
+    //     if (!check) printf(RED "Invalide name please try again.\n" RESET);
+    // }
+    // check = false;
 
     strncpy(newClient.CIN, CIN, sizeof(newClient.CIN) - 1);
     newClient.CIN[sizeof(newClient.CIN) - 1] = '\0';
@@ -205,7 +210,7 @@ Client createClient()
     scanf(" %[^\n]", newClient.address);
 
     newClient.Blacklisted = 0;
-    newClient.activation = 0;
+    newClient.activation = 1;
 
     setAndConfirmPIN(newClient.PIN);
 
@@ -218,19 +223,26 @@ Client createClient()
     return newClient;
 }
 
-void updateClient(char *cin) {
+void updateClient(char *cin) 
+{
     FILE *file = fopen("clients.dat", "rb");
+    
     if (file == NULL) {
-        printf(RED "ERROR: Unable to open client database.\n" RESET);
-        printf(RED BOLD "A critical error occurred while processing your request. Please try again later or contact support.\n" RESET);
+        printf(RED "ERROR: Failed to open the client database.\n" RESET);
+        printf(RED "A critical error occurred while processing your request.\n" BOLD "Please try again later or contact support.\n" RESET);
+        
         return;
     }
 
     FILE *tempFile = fopen("temp_clients.dat", "wb");
-    if (tempFile == NULL) {
-        printf(RED "ERROR: Unable to create temporary file.\n" RESET);
-        printf(RED BOLD "A critical error occurred while processing your request. Please try again later or contact support.\n" RESET);
+    
+    if (tempFile == NULL) 
+    {
+        printf(RED "ERROR: Failed to create the temporary file.\n" RESET);
+        printf(RED BOLD "A critical error occurred while processing your request.\n" BOLD "Please try again later or contact support.\n" RESET);
+        
         fclose(file);
+        
         return;
     }
 
@@ -246,10 +258,10 @@ void updateClient(char *cin) {
             while (a)
             {            
                 printf(YELLOW "Which field would you like to modify?\n" RESET);
-                printf("0 - Skip\n");
-                printf("1 - Name\n");
-                printf("2 - Phone Number\n");
-                printf("3 - Address\n");
+                printf(BLUE "0" RESET "- Skip\n");
+                printf(BLUE "1" RESET "- Phone Number\n");
+                printf(BLUE "2" RESET "- Address\n");
+                
                 printf("Enter your choice: ");
                 int choice;
                 scanf("%d", &choice);
@@ -263,21 +275,6 @@ void updateClient(char *cin) {
                     }
                     case 1: 
                     {
-                        char newName[30];
-                        int valid = 0;
-                        while (!valid) {
-                            printf("Enter new Name: ");
-                            scanf(" %[^\n]", newName);
-                            valid = isAlphaString(newName);
-                            if (!valid) printf(RED "Invalid name. Please try again.\n" RESET);
-                        }
-                        strncpy(client.name, newName, sizeof(client.name) - 1);
-                        client.name[sizeof(client.name) - 1] = '\0';
-                        printf(GREEN "Name updated successfully.\n" RESET);
-                        break;
-                    }
-                    case 2: 
-                    {
                         if (authenticateClient(&client)) 
                         {
                             char newPhone[11];
@@ -285,7 +282,9 @@ void updateClient(char *cin) {
                             while (!valid) {
                                 printf("Enter new Phone Number: ");
                                 scanf(" %[^\n]", newPhone);
+                                
                                 valid = isNumericString(newPhone) && strlen(newPhone) == 10 && newPhone[0] == '0';
+                                
                                 if (!valid) printf(RED "Invalid phone number. Please try again.\n" RESET);
                             }
                             strncpy(client.phoneNumber, newPhone, sizeof(client.phoneNumber) - 1);
@@ -294,7 +293,7 @@ void updateClient(char *cin) {
                         }
                         break;
                     }
-                    case 3:
+                    case 2:
                     {
                         char newAddress[50];
                         printf("Enter new Address: ");
@@ -330,4 +329,5 @@ void updateClient(char *cin) {
     rename("temp_clients.dat", "clients.dat");
 
     printf(GREEN "Client details updated successfully in the database.\n" RESET);
+    main();
 }
