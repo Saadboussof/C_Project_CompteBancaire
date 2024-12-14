@@ -17,7 +17,7 @@ void saveClientToFile(Client *client)
 // Function to search for a client by CIN or clientID
 Client *findClient(char *CIN, long long clientID, int searchByCIN)          // 0- ID   1- CIN
 {
-    FILE *file = fopen("clients.dat", "rb");
+    FILE *file = fopen("clients.dat", "ab+");
     if (file == NULL)
     {
         printf(RED "ERROR : Failed to open file clients file\n" RESET);

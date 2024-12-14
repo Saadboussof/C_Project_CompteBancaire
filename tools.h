@@ -15,6 +15,7 @@
 #define BLUE "\033[34m"
 #define PURPLE "\033[35m"
 #define RED "\033[31m"
+#define MAGENTA "\033[35m"
 #define ORANGE "\033[38;5;214m"
 #define YELLOW "\033[33m"
 #define GREEN "\033[32m"
@@ -33,5 +34,8 @@ int validatePIN(const char *enteredPIN, const char *correctPIN);
 int isAlphaString(char *str);
 int isNumericString(char *str);
 int isAlphanumericString(char *str);
-
+void fordelay(int j);
+void displaySpectacularLoadingBar(int duration);
+void gradientSpinner(int duration);
+void typingEffect(const char *text, int speed);
 #endif // TOOLS_H
