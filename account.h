@@ -32,6 +32,15 @@ typedef struct
 
 } Account;
 
+// the news by saad
+typedef struct 
+{
+    long long AccountID ;
+    float amount ;
+    char detail[50];
+    char dateop[23];
+} hestoric ;
+
 Account *searchAccountsByClientID(long long ownerID, int *resultCount);
 Account *searchAccountByID(long long accountID);
 void logIn_Account(long long ownerID);
@@ -51,5 +60,8 @@ void updateAccount(Account *updatedAccount);
 void displayAllAccounts();
 int rechargeOnline(Account *account);
 int payOnline(Account *account, float amount);
+void savehesto(hestoric data);
+void searchByAccountID(long long searchID);
+void formatString(char *input);
 
 #endif // ACCOUNT_H

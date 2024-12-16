@@ -172,6 +172,27 @@ void signUpRequest()
     } else{
         Client newClient = createClient();
         saveClientToFile(&newClient);
+
+        char *Choices[] = {
+        "Client Portal",
+        "Employee Dashboard",
+        "Exit",
+        NULL};
+
+        int choice = choose_item(Choices, "Make your choice");
+
+        switch (choice)
+        {
+        case 0:
+            Client_Portal();
+            break;
+        case 1:
+            printf("Manager Dashboard");
+            break;
+        default:
+            exit(0);
+            break;
+        }
     }
 
 }
