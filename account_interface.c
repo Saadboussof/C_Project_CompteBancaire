@@ -120,8 +120,7 @@ int authenticate_account(Account *selectedAccount)
 void handleAccountBlocking(Account *account)
 {
     account->isBlocked = ~account->isBlocked; // Mark the account as blocked
-    deleteAccountFromFile(account->accountID);
-    saveAccountToFile(account);
+    updateAccount(account);
 }
 
 char *ACCOUNT_TYPES[] = {

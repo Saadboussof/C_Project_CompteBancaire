@@ -5,8 +5,8 @@ void Client_Portal()
     char *Choices[] = {
         "Log in",
         "Sign Up",
-        "Return",                   // return to the menu in the main function
-        "Exit",                    // exit the app
+        "Return", // return to the menu in the main function
+        "Exit",   // exit the app
         NULL};
 
     int choice = choose_item(Choices, "Make your choice");
@@ -48,7 +48,7 @@ void requestCIN() // (8 caraters long) + (first alpha) + (second alpha or num) +
 int isValidCIN(char *cin)
 {
     // Check length
-    if (strlen(cin) != sizeof(CIN)-1)
+    if (strlen(cin) != sizeof(CIN) - 1)
         return 0;
 
     // Validate first character (must be alphabetic)
@@ -83,19 +83,19 @@ void logIn_Client()
     while (client == NULL)
     {
         printf(ORANGE "Client with CIN: %s not found.\n" RESET, CIN);
-        printf("1 - Retry CIN\n2 - Request Sign Up\n");
+        printf("1- Retry CIN\n2- Request Sign Up\n");
 
-        int choice;
-        scanf("%1d", &choice);
+        char choice;
+        choice = getch();
 
         // while: invalid CIN or choice, or no request to sign up
         switch (choice)
         {
-        case 1:
+        case '1':
             requestCIN();
             client = findClient(CIN, 0, 1);
             break;
-        case 2:
+        case '2':
             signUpRequest();
             break;
         default:
@@ -104,15 +104,15 @@ void logIn_Client()
         }
     }
 
-    if ( authenticateClient(client)  &&  checkClientApprovalStatus(client) ) 
+    if (authenticateClient(client) && checkClientApprovalStatus(client))
     {
         // If no issues, grant access
         printf(CYAN "\nWelcome, %s!\nAccessing BANK MANAGEMENT SYSTEM" RESET, client->name);
         for (int i = 0; i <= 6; i++)
-            {
-                fordelay(100000000);
-                printf(CYAN BOLD "." RESET);
-            }
+        {
+            fordelay(100000000);
+            printf(CYAN BOLD "." RESET);
+        }
         printf("\n");
         displayClientDetails(client);
         logIn_Account(client->clientID);
@@ -129,7 +129,7 @@ int authenticateClient(Client *client)
         printf("Enter your PIN: ");
         PIN_hide(PIN, sizeof(PIN));
 
-        if (validatePIN(client->PIN, PIN)) 
+        if (validatePIN(client->PIN, PIN))
         {
             printf(GREEN "Correct PIN\n" RESET);
             return 1;
@@ -151,9 +151,10 @@ int checkClientApprovalStatus(Client *client)
     {
         printf(ORANGE "Your account is still pending approval. Please wait for an update from the bank.\n" RESET "However, you can view your client details.\n" RED "If any information in details below is incorrect, click 1 and update it.\n" RESET);
         displayClientDetails(client);
-        int choice;
-        scanf("%1d", &choice);
-        if (choice == 1) updateClient(client->CIN);
+        char choice;
+        choice = getch();
+        if (choice == '1')
+            updateClient(client->CIN);
         exit(0);
     }
     return 1;
@@ -166,14 +167,17 @@ void signUpRequest()
         requestCIN();
     }
 
-    if (findClient(CIN, 0, 1) != NULL) {
-        printf(BLUE "Client with CIN : %s already existe.\nRedirecting to login...\n" RESET , CIN);
+    if (findClient(CIN, 0, 1) != NULL)
+    {
+        printf(BLUE "Client with CIN : %s already existe.\nRedirecting to login...\n" RESET, CIN);
         logIn_Client();
-    } else{
+    }
+    else
+    {
         Client newClient = createClient();
         saveClientToFile(&newClient);
+        return;
     }
-
 }
 
 Client createClient()
@@ -183,34 +187,33 @@ Client createClient()
 
     printf(BLUE "Requesting client creation...\n" RESET);
 
-    // while (!check)
-    // {
+    while (!check)
+    {
         printf("Enter Client Name: ");
         scanf(" %[^\n]", newClient.name);
-        // fgets(newClient.name, sizeof(newClient.name) , stdin);
-    //     check = isAlphaString(newClient.name);
-    //     if (!check) printf(RED "Invalide name please try again.\n" RESET);
-    // }
-    // check = false;
+        check = isAlphaString(newClient.name);
+        if (!check) printf(RED "Invalide name please try again.\n" RESET);
+    }
+    check = false;
 
     strncpy(newClient.CIN, CIN, sizeof(newClient.CIN) - 1);
     newClient.CIN[sizeof(newClient.CIN) - 1] = '\0';
-    
+
     while (!check)
     {
         printf("Enter Client Phone Number: ");
         scanf(" %[^\n]", newClient.phoneNumber);
         check = (isNumericString(newClient.phoneNumber) && (strlen(newClient.phoneNumber) == 10) && (newClient.phoneNumber[0] == '0'));
-        if (!check) printf(RED "Invalide Phone Number please try again.\n" RESET);
+        if (!check)
+            printf(RED "Invalide Phone Number please try again.\n" RESET);
     }
     check = false;
-
 
     printf("Enter Client Address: ");
     scanf(" %[^\n]", newClient.address);
 
     newClient.Blacklisted = 0;
-    newClient.activation = 1;
+    newClient.activation = 0;
 
     setAndConfirmPIN(newClient.PIN);
 
@@ -223,89 +226,92 @@ Client createClient()
     return newClient;
 }
 
-void updateClient(char *cin) 
+void updateClient(char *cin)
 {
     FILE *file = fopen("clients.dat", "rb");
-    
-    if (file == NULL) {
+
+    if (file == NULL)
+    {
         printf(RED "ERROR: Failed to open the client database.\n" RESET);
         printf(RED "A critical error occurred while processing your request.\n" BOLD "Please try again later or contact support.\n" RESET);
-        
+
         return;
     }
 
     FILE *tempFile = fopen("temp_clients.dat", "wb");
-    
-    if (tempFile == NULL) 
+
+    if (tempFile == NULL)
     {
         printf(RED "ERROR: Failed to create the temporary file.\n" RESET);
-        printf(RED BOLD "A critical error occurred while processing your request.\n" BOLD "Please try again later or contact support.\n" RESET);
-        
+        printf(RED "A critical error occurred while processing your request.\n" BOLD "Please try again later or contact support.\n" RESET);
+
         fclose(file);
-        
+
         return;
     }
 
     Client client;
     int found = 0;
 
-    while (fread(&client, sizeof(Client), 1, file) == 1) 
+    while (fread(&client, sizeof(Client), 1, file) == 1)
     {
-        if (strcmp(client.CIN, cin) == 0) 
+        if (strcmp(client.CIN, cin) == 0)
         {
             found = 1;
             int a = 1;
             while (a)
-            {            
+            {
                 printf(YELLOW "Which field would you like to modify?\n" RESET);
-                printf(BLUE "0" RESET "- Skip\n");
-                printf(BLUE "1" RESET "- Phone Number\n");
-                printf(BLUE "2" RESET "- Address\n");
-                
-                printf("Enter your choice: ");
-                int choice;
-                scanf("%d", &choice);
+                printf("0- Skip\n");
+                printf("1- Phone Number\n");
+                printf("2- Address\n");
 
-                switch (choice) 
+                printf("Enter your choice: ");
+                char choice;
+                choice = getch();
+
+                switch (choice)
                 {
-                    case 0:
+                case '0':
+                {
+                    a = 0;
+                    break;
+                }
+                case '1':
+                {
+                    if (authenticateClient(&client))
                     {
-                        a = 0;
-                        break;
-                    }
-                    case 1: 
-                    {
-                        if (authenticateClient(&client)) 
+                        char newPhone[11];
+                        int valid = 0;
+                        while (!valid)
                         {
-                            char newPhone[11];
-                            int valid = 0;
-                            while (!valid) {
-                                printf("Enter new Phone Number: ");
-                                scanf(" %[^\n]", newPhone);
-                                
-                                valid = isNumericString(newPhone) && strlen(newPhone) == 10 && newPhone[0] == '0';
-                                
-                                if (!valid) printf(RED "Invalid phone number. Please try again.\n" RESET);
-                            }
-                            strncpy(client.phoneNumber, newPhone, sizeof(client.phoneNumber) - 1);
-                            client.phoneNumber[sizeof(client.phoneNumber) - 1] = '\0';
-                            printf(GREEN "Phone number updated successfully.\n" RESET);
+                            printf("Enter new Phone Number: ");
+                            scanf(" %[^\n]", newPhone);
+
+                            valid = isNumericString(newPhone) && strlen(newPhone) == 10 && newPhone[0] == '0';
+
+                            if (!valid)
+                                printf(RED "Invalid phone number. Please try again.\n" RESET);
                         }
-                        break;
+                        strncpy(client.phoneNumber, newPhone, sizeof(client.phoneNumber) - 1);
+                        client.phoneNumber[sizeof(client.phoneNumber) - 1] = '\0';
+                        printf(GREEN "Phone number updated successfully.\n" RESET);
                     }
-                    case 2:
-                    {
-                        char newAddress[50];
-                        printf("Enter new Address: ");
-                        scanf(" %[^\n]", newAddress);
-                        strncpy(client.address, newAddress, sizeof(client.address) - 1);
-                        client.address[sizeof(client.address) - 1] = '\0';
-                        printf(GREEN "Address updated successfully.\n" RESET);
-                        break;
-                    }
-                    default:
-                        printf(ORANGE "Invalid choice. No changes were made.\n" RESET);
-                        break;
+                    break;
+                }
+                case '2':
+                {
+                    char newAddress[50];
+                    printf("Enter new Address: ");
+                    scanf(" %[^\n]", newAddress);
+                    strncpy(client.address, newAddress, sizeof(client.address) - 1);
+                    client.address[sizeof(client.address) - 1] = '\0';
+                    printf(GREEN "Address updated successfully.\n" RESET);
+                    break;
+                }
+                default:
+                    printf(ORANGE "Invalid choice. No changes were made.\n" RESET);
+                    break;
                 }
             }
         }

@@ -94,7 +94,7 @@ void updateAccount(Account *updatedAccount)
 
 Account *searchAccountsByClientID(long long ownerID, int *resultCount)
 {
-    FILE *file = fopen("accounts.dat", "ab");
+    FILE *file = fopen("accounts.dat", "rb");
     if (file == NULL)
     {
         printf("ERROR : Failed to open file");
