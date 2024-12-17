@@ -63,5 +63,6 @@ int payOnline(Account *account, float amount);
 void savehesto(hestoric data);
 void searchByAccountID(long long searchID);
 void formatString(char *input);
+void FUNCTION(Account selectedAccount);
 
 #endif // ACCOUNT_H
