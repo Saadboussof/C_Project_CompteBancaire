@@ -12,16 +12,8 @@ void welcom()
 void main()
 {
     srand(time(NULL)); // Seed the random number generator
-    // displayAllClients();
     // welcom();
-    // printf("\n\n(0,0)\n\n");
-    // displayFilteredClients(0, 0);
-    // printf("\n\n(0,1)\n\n");
-    // displayFilteredClients(0, 1);
-    // printf("\n\n(1,0)\n\n");
-    // displayFilteredClients(1, 0);
-    // printf("\n\n(1,1)\n\n");
-    // displayFilteredClients(1, 1);
+
     char *Choices[] = {
         "Client Portal",
         "Employee Dashboard",

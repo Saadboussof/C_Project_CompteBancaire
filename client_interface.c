@@ -87,6 +87,7 @@ void logIn_Client()
 
         char choice;
         choice = getch();
+        printf("\n");
 
         // while: invalid CIN or choice, or no request to sign up
         switch (choice)
@@ -153,6 +154,7 @@ int checkClientApprovalStatus(Client *client)
         displayClientDetails(client);
         char choice;
         choice = getch();
+        printf("\n");
         if (choice == '1')
             updateClient(client->CIN);
         exit(0);
@@ -192,7 +194,8 @@ Client createClient()
         printf("Enter Client Name: ");
         scanf(" %[^\n]", newClient.name);
         check = isAlphaString(newClient.name);
-        if (!check) printf(RED "Invalide name please try again.\n" RESET);
+        if (!check)
+            printf(RED "Invalide name please try again.\n" RESET);
     }
     check = false;
 
@@ -266,9 +269,9 @@ void updateClient(char *cin)
                 printf("1- Phone Number\n");
                 printf("2- Address\n");
 
-                printf("Enter your choice: ");
                 char choice;
                 choice = getch();
+                printf("\n");
 
                 switch (choice)
                 {
@@ -336,4 +339,10 @@ void updateClient(char *cin)
 
     printf(GREEN "Client details updated successfully in the database.\n" RESET);
     main();
+}
+
+void viewProcedInactive()
+{
+    displayFilteredClients(1, 0);
+    processClientRequest();
 }

@@ -1,19 +1,6 @@
 #include "account.h"
 
-int payOnline(Account *account, float amount) 
-{
-    if (account->balance < amount) {
-        printf(RED "Transaction failed: Insufficient funds.\n" RESET);
-        return 0; // Payment failed
-    }
-
-    // Deduct the amount from the card balance
-    account->balance -= amount;
-    updateAccount(account); // Update account file
-
-    printf(GREEN "Payment of %.2f was successful! Remaining balance: %.2f\n" RESET, amount, account->balance);
-    return 1; // Payment successful
-}
+#define MAX_CATEGORIES 20 //max number of payment categories
 
 int rechargeOnline(Account *account)
 {
@@ -114,4 +101,114 @@ int rechargeOnline(Account *account)
 
     printf(CYAN "Remaining balance: " RESET "%.2f\n", account->balance);
     return 1; // Recharge successful
+}
+typedef struct {
+    char name[30];
+    float totalSpent;
+    float budget;
+} Category;
+typedef struct {
+    char description[50];
+    char category[30];
+    float amount;
+} Transaction;
+
+Category categories[MAX_CATEGORIES];
+int categoryCount = 5;
+
+// Initialize Categories with Specific Purposes
+void initializeCategories() {
+    strcpy(categories[0].name, "Groceries");
+    categories[0].budget = 200.0;
+
+    strcpy(categories[1].name, "Bills");
+    categories[1].budget = 500.0;
+
+    strcpy(categories[2].name, "Entertainment");
+    categories[2].budget = 100.0;
+
+    strcpy(categories[3].name, "Transportation");
+    categories[3].budget = 150.0;
+
+    strcpy(categories[4].name, "Others");
+    categories[4].budget = 50.0;
+
+    for (int i = 0; i < categoryCount; i++) {
+        categories[i].totalSpent = 0.0;
+    }
+}
+
+char *Categories[] = {
+    "Groceries",
+    "Bills",
+    "Entertainment",
+    "Transportation",
+    "Others",
+    "Add new categorie",
+    NULL};
+
+void payOnline(Account *account) {
+    BankCard cardpayment = searchBankCardByaccountID(account->accountID);
+
+    char description[50];
+    float amount;
+    int categoryChoice;
+
+    printf("Enter the amount to pay : DH ");
+    scanf("%f", &amount);
+
+    if (amount > cardpayment.cardbalance) {
+        printf(RED "Insufficient funds! Payment cannot be processed.\n" RESET);
+        return;
+    }
+
+    int choice = choose_item(Categories, "Select a category");
+
+    if (amount > categories[choice].budget - categories[choice].totalSpent) {
+        printf(RED "You're out of the categorie %s's budget.\n" RESET , categories[choice]);
+        return;
+    }
+
+    printf("Enter a description for this payment: ");
+    scanf(" %[^\n]", description);
+
+    // Deduct from card balance and update category spending
+    cardpayment.cardbalance -= amount;
+    categories[choice].totalSpent += amount;
+
+    // Transaction transaction;             FIXME: // it gonna be the history struct and its functions 
+    // // Record the transaction
+    // strcpy(transactions[transactionCount].description, description);
+    // strcpy(transactions[transactionCount].category, categories[selectedCategory].name);
+    // transactions[transactionCount].amount = amount;
+    // transactionCount++;
+
+    printf(GREEN "Payment of %.2fDH for '%s' categorized as '%s' has been processed successfully.\n" RESET , amount, description, categories[choice].name);
+
+    // Perform category-specific action
+    handleCategorySpecificAction(choice);
+}
+
+// Perform Category-Specific Actions
+void handleCategorySpecificAction(int choice) {
+    switch (choice)
+    {
+    case 0:
+        printf(CYAN "\n** Tip: Buying in bulk could save you money! **\n" RESET);
+        break;
+    case 1:
+        printf(CYAN "\n** Set up recurring payments for your convenience. **\n" RESET);
+        break;
+    case 2:
+        printf(CYAN "\n** Reminder: Stay within your entertainment budget for savings. **\n" RESET);
+        break;
+    case 3:
+        printf(CYAN "\n** Did you know? Tracking your mileage could help optimize fuel costs. **\n" RESET);
+        break;
+    case 4:
+        printf(CYAN "\n** Note: Record any special details about this payment for future reference. **\n" RESET);
+        break;
+    default:
+        break;
+    }
 }

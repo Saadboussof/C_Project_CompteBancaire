@@ -33,5 +33,6 @@ void processClientRequest();
 void displayClientDetails(Client *client);
 void displayAllClients();
 void displayFilteredClients(int filterType, int filterValue);
+void viewProcedInactive();
 
 #endif // CLIENT_H

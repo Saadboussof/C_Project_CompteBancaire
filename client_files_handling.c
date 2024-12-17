@@ -97,6 +97,7 @@ void processClientRequest()
 
             char choice;
             choice = getch();
+            printf("\n");
 
             if (choice == '1')
             {
