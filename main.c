@@ -1,6 +1,7 @@
 #include "tools.h"
 #include "client.h"
 #include "account.h"
+#include "employee.h"
 
 void main()
 {
@@ -25,7 +26,7 @@ void main()
         Client_Portal();
         break;
     case 1:
-        printf("Manager Dashboard");
+        Employee_Portal();
         break;
     default:
         exit(0);

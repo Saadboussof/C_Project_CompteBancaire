@@ -29,10 +29,10 @@ Client createClient();
 void updateClient(char *cin);
 void saveClientToFile(Client *client);
 Client *findClient(char *CIN, long long clientID, int searchByCIN);
-void processClientRequest();
+// void processClientRequest();
 void reviewAccountUpdateRequest();
 void displayClientDetails(Client *client);
-void displayAllClients();
+// void displayAllClients();
 void displayFilteredClients(int filterType, int filterValue);
 
 #endif // CLIENT_H
