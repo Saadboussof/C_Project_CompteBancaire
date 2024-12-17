@@ -266,7 +266,7 @@ void Employee_Interface(Employee *loggedInEmployee)
             printf("\nLogging out...\n");
             free(loggedInEmployee); // Free memory
             loggedInEmployee = NULL; // Reset the global pointer
-            return;
+            main();
 
         default: // Invalid option
             printf(RED "Invalid option. Please try again.\n" RESET);

@@ -231,7 +231,7 @@ Client createClient()
     scanf(" %[^\n]", newClient.address);
 
     newClient.Blacklisted = 0;
-    newClient.activation = 1;
+    newClient.activation = 0;
 
     setAndConfirmPIN(newClient.PIN);
 
