@@ -4,6 +4,7 @@
 
 void logIn_Account(long long ownerID)
 {
+    hestoric data ;
     int resultCount = 0;
 
     Account *accounts = searchAccountsByClientID(ownerID, &resultCount);
@@ -62,23 +63,115 @@ void logIn_Account(long long ownerID)
             continue; // Skip the rest of the loop and ask the user to choose another account
         }
 
-        if (authenticate_account(&selectedAccount))
+        if (authenticate_account( &selectedAccount ))
         {
             gradientSpinner(50); // 50 ms per frame
 
             displayAccountDetails(selectedAccount);
             
-            char response[2];
-            printf(ORANGE "Would you like to display your bank card information? (y/n): " RESET);
-            scanf("%1s", response);
-
-            // Convert input to lowercase for easier comparison
-            response[0] = tolower(response[0]);
-
-            if (strcmp(response, "y") == 0) displayBankCardInfo(selectedAccount);
-            accountSelected = 1; // Mark account as successfully selected
+            char response[2] ;
+           char *Choicess[] = {
+              " display informations ",
+              " recharge online ! ",
+              " payer votre facture ",
+              " afficher les chiffres de carte ",
+              " transaction ",
+              " historical of your activities ",
+              " return ",
+              " exit ",
+           NULL};
+        
+         while(1){
+           int choice = choose_item(Choicess, " ---- Make your choice ! ---- ");
+           switch (choice)
+           {
+           case 0:
+            displayBankCardInfo(selectedAccount);
+            // logIn_Account(ownerID);
             // break;
+            continue;
+           case 1:
             rechargeOnline(&selectedAccount);
+            // logIn_Account(ownerID);
+            // break;
+            continue;
+           case 2:
+            printf(" you have not established any relationship with any of your invoices . \n");
+            printf(" !!!!!! \n\n ");
+            // logIn_Account(ownerID);
+            break;
+           case 3:
+            printf(" _________ Your number card is : _________ \n");
+            BankCard bankCard = searchBankCardByaccountID(selectedAccount.accountID);
+            // printf("=> %s \n\n",bankCard.cardNumber);
+            printf(" \n");
+            formatString( bankCard.cardNumber );
+            // logIn_Account(ownerID);
+            // break;
+            continue;
+           case 4:
+            long long ID ;
+            Account *distAccount ;
+             while( 1 ){
+              printf(" give the ID o the account you want to send money to : ");
+              scanf("%lld",&ID);
+
+              distAccount = searchAccountByID(ID);
+              if( distAccount == NULL ){
+                printf(" the account does not exist in databases !! \n try again !! \n\n\n");
+              }else{
+                break ;
+              }
+             }
+            printf("\n how much you want to sent ? : ");
+            float much ;
+            scanf("%f",&much);
+            if( selectedAccount.balance < much ){
+              printf(" you have not enough money in your account !! \n\n\n");
+            }else{
+              selectedAccount.balance = selectedAccount.balance - much ;
+              distAccount->balance = distAccount->balance + much ;
+              updateAccount(distAccount);
+              updateAccount(&selectedAccount);
+              hestoric data;
+              data.AccountID = selectedAccount.accountID ;
+              data.amount = -much ;
+              strcpy(data.detail," ---->> you send money !! :") ;
+              getCurrentDate(data.dateop, sizeof(data.dateop));
+              savehesto(data);
+
+              data.AccountID = distAccount->accountID ;
+              data.amount = much ;
+              strcpy(data.detail,"---->> you recieve money !! :") ;
+              getCurrentDate(data.dateop, sizeof(data.dateop));
+              savehesto(data);
+            }
+            // logIn_Account(ownerID);
+            // break;
+            continue;
+           case 5: 
+            searchByAccountID(selectedAccount.accountID);
+            printf("\n\n");
+            // logIn_Account(ownerID);
+            // break;
+            continue;
+           case 6:
+               logIn_Account(ownerID);
+           default:
+               exit(0);
+            //    break;
+            continue;
+           }
+           }
+           
+            // printf(ORANGE "Would you like to display your bank card information? (y/n): " RESET);
+            // scanf("%1s", response);
+            // // Convert input to lowercase for easier comparison
+            // response[0] = tolower(response[0]);
+            // if (strcmp(response, "y") == 0) displayBankCardInfo(selectedAccount);
+            // accountSelected = 1; // Mark account as successfully selected
+            // break;
+            //rechargeOnline(&selectedAccount); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         }
 
         for (int i = 0; i < resultCount; i++)
@@ -88,7 +181,33 @@ void logIn_Account(long long ownerID)
         free(accountOptions);
     }
 }
+void formatString(char *input) {
+    int len = strlen(input);
+     printf("==> ");
+    for (int i = 0; i < len; i++) {
+        printf("%c", input[i]);
 
+        // Insert a space after every 4 characters
+        if ((i + 1) % 4 == 0 && i != len - 1) {
+            printf(" ");
+        }
+    }
+    printf(" <==\n\n\n");
+}
+
+void savehesto(hestoric data) {
+    FILE *file = fopen("hestorical.bin", "ab+"); // "ab" = append in binary mode
+    if (file == NULL) {
+        perror("Error opening file");
+    }
+
+    // Write the struct to the file
+    fwrite(&data, sizeof(hestoric), 1, file);
+
+    // Close the file
+    fclose(file);
+    // printf("Data saved successfully.\n");
+}
 int authenticate_account(Account *selectedAccount)
 {
     char PIN[5];

@@ -98,7 +98,12 @@ int rechargeOnline(Account *account)
         printf(RED "Recharge failed: Insufficient funds.\n" RESET);
         return 0; // Recharge failed
     }
-
+    hestoric data;
+    data.AccountID = account->accountID ;
+    data.amount = -amount ;
+    strcpy(data.detail,"you did a Recharge") ;
+    getCurrentDate(data.dateop, sizeof(data.dateop));
+    savehesto(data);
     // Step 3: Choose recharge type
     int rechargeTypeIndex = choose_item(RECHARGE_TYPES, "Choose Recharge Type");
     printf(GREEN "Selected recharge type: %s\n" RESET, RECHARGE_TYPES[rechargeTypeIndex]);

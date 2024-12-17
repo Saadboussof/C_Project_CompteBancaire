@@ -94,7 +94,7 @@ void updateAccount(Account *updatedAccount)
 
 Account *searchAccountsByClientID(long long ownerID, int *resultCount)
 {
-    FILE *file = fopen("accounts.dat", "ab");
+    FILE *file = fopen("accounts.dat", "rb");
     if (file == NULL)
     {
         printf("ERROR : Failed to open file");
@@ -276,4 +276,32 @@ void updateBankCard(BankCard *updatedCard) {
     saveBankCardToFile(updatedCard);
 
     printf(GREEN "Bank card updated successfully!\n" RESET);
+}
+
+// Function to search for a record by AccountID and display it
+void searchByAccountID(long long searchID) {
+    FILE *file = fopen("hestorical.bin", "rb"); // Open the file in binary read mode
+    if (file == NULL) {
+        perror("Error opening file");
+    }
+
+    hestoric record; // Temporary variable to hold each record
+    int found = 0;
+
+    // Read records from the file one by one
+    while (fread(&record, sizeof(hestoric), 1, file) == 1) {
+        if (record.AccountID == searchID) { // Compare the AccountID
+            printf("Amount: %.2f\t", record.amount);
+            printf("Detail: %s\t", record.detail);
+            printf("Date: %s\n", record.dateop);
+            found = 1;
+            // break; // Exit the loop once the record is found
+        }
+    }
+
+    if (!found) {
+        printf("No record found");
+    }
+
+    fclose(file); // Close the file
 }
