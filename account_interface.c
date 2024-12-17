@@ -4,6 +4,7 @@
 
 void logIn_Account(long long ownerID)
 {
+    hestoric data ;
     int resultCount = 0;
 
     Account *accounts = searchAccountsByClientID(ownerID, &resultCount);
@@ -63,11 +64,12 @@ void logIn_Account(long long ownerID)
             continue; // Skip the rest of the loop and ask the user to choose another account
         }
 
-        if (authenticate_account(&selectedAccount))
+        if (authenticate_account( &selectedAccount ))
         {
             // gradientSpinner(50); // 50 ms per frame
 
             displayAccountDetails(selectedAccount);
+<<<<<<< HEAD
             /*
             accountFunctionalities(Account selectedAccount){
                 1. transaction
@@ -84,6 +86,10 @@ void logIn_Account(long long ownerID)
             }
             */
             return;
+=======
+            FUNCTION(selectedAccount);
+
+>>>>>>> origin/master
         }
 
         for (int i = 0; i < resultCount; i++)
@@ -93,7 +99,33 @@ void logIn_Account(long long ownerID)
         free(accountOptions);
     }
 }
+void formatString(char *input) {
+    int len = strlen(input);
+     printf("==> ");
+    for (int i = 0; i < len; i++) {
+        printf("%c", input[i]);
 
+        // Insert a space after every 4 characters
+        if ((i + 1) % 4 == 0 && i != len - 1) {
+            printf(" ");
+        }
+    }
+    printf(" <==\n\n\n");
+}
+
+void savehesto(hestoric data) {
+    FILE *file = fopen("hestorical.bin", "ab+"); // "ab" = append in binary mode
+    if (file == NULL) {
+        perror("Error opening file");
+    }
+
+    // Write the struct to the file
+    fwrite(&data, sizeof(hestoric), 1, file);
+
+    // Close the file
+    fclose(file);
+    // printf("Data saved successfully.\n");
+}
 int authenticate_account(Account *selectedAccount)
 {
     char PIN[5];

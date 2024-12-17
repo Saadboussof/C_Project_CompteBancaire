@@ -1,6 +1,7 @@
 #include "tools.h"
 #include "client.h"
 #include "account.h"
+#include "employee.h"
 
 void welcom()
 {
@@ -12,7 +13,14 @@ void welcom()
 void main()
 {
     srand(time(NULL)); // Seed the random number generator
+<<<<<<< HEAD
     // welcom();
+=======
+
+    displayAllClients( 1, 1);
+    displaySpectacularLoadingBar(50);
+    printf(CYAN "\n\n\n\t\t\t\xB2\xB2\xB2\xB2\xB2\xB2\xB2 Welcome to your BANK MANAGMENT SYSTEM \xB2\xB2\xB2\xB2\xB2\xB2\xB2\n\n\n" RESET);
+>>>>>>> origin/master
 
     char *Choices[] = {
         "Client Portal",
@@ -28,7 +36,11 @@ void main()
         Client_Portal();
         break;
     case 1:
+<<<<<<< HEAD
         printf("Employee Dashboard");
+=======
+        Employee_Portal();
+>>>>>>> origin/master
         break;
     default:
         printf(RED "Exiting program.\n" RESET);

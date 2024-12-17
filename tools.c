@@ -263,7 +263,7 @@ void gradientSpinner(int duration) {
         printf("\r%s%c " RESET "Loading... %d%%", colors[i % 6], spinner[spinnerIndex], i + 1);
 
         fflush(stdout);
-        spinnerIndex = (spinnerIndex + 1) % 4;
+        spinnerIndex = (spinnerIndex + 1) % 4 ;
         usleep(duration * 1000); // Adjust speed
     }
 

@@ -85,7 +85,12 @@ int rechargeOnline(Account *account)
         printf(RED "Recharge failed: Insufficient funds.\n" RESET);
         return 0; // Recharge failed
     }
-
+    hestoric data;
+    data.AccountID = account->accountID ;
+    data.amount = -amount ;
+    strcpy(data.detail,"you did a Recharge") ;
+    getCurrentDate(data.dateop, sizeof(data.dateop));
+    savehesto(data);
     // Step 3: Choose recharge type
     int rechargeTypeIndex = choose_item(RECHARGE_TYPES, "Choose Recharge Type");
     printf(GREEN "Selected recharge type: %s\n" RESET, RECHARGE_TYPES[rechargeTypeIndex]);
@@ -102,6 +107,7 @@ int rechargeOnline(Account *account)
     printf(CYAN "Remaining balance: " RESET "%.2f\n", account->balance);
     return 1; // Recharge successful
 }
+<<<<<<< HEAD
 typedef struct {
     char name[30];
     float totalSpent;
@@ -212,3 +218,93 @@ void handleCategorySpecificAction(int choice) {
         break;
     }
 }
+=======
+
+char *Choicess[] = {
+    " display informations ",
+    " recharge online ! ",
+    " payer votre facture ",
+    " afficher les chiffres de carte ",
+    " transaction ",
+    " historical of your activities ",
+    " return ",
+    " exit ",
+    NULL};
+
+void FUNCTION(Account selectedAccount){
+    while(1) {
+        int choice = choose_item(Choicess, " ---- Make your choice ! ---- ");
+        switch (choice) {
+            case 0:
+            displayBankCardInfo(selectedAccount);
+            continue;
+            
+            case 1:
+            rechargeOnline(&selectedAccount);
+            continue;
+            
+            case 2:
+            printf(" you have not established any relationship with any of your invoices . \n");
+            printf(" !!!!!! \n\n ");
+            break;
+            
+            case 3:
+            printf(" _________ Your number card is : _________ \n");
+            BankCard bankCard = searchBankCardByaccountID(selectedAccount.accountID);
+            printf(" \n");
+            formatString( bankCard.cardNumber );
+            continue;
+            
+            case 4:
+            long long ID ;
+            Account *distAccount ;
+                while( 1 ) {
+                    printf(" give the ID o the account you want to send money to : ");
+                    scanf("%lld",&ID);
+
+                    distAccount = searchAccountByID(ID);
+                    if( distAccount == NULL ) {
+                        printf(" the account does not exist in databases !! \n try again !! \n\n\n");
+                    } else break ;
+                }
+            
+            printf("\n how much you want to sent ? : ");
+            float much ;
+            scanf("%f",&much);
+            if( selectedAccount.balance < much ){
+                printf(" you have not enough money in your account !! \n\n\n");
+            }else{
+                selectedAccount.balance = selectedAccount.balance - much ;
+                distAccount->balance = distAccount->balance + much ;
+                updateAccount(distAccount);
+                updateAccount(&selectedAccount);
+                hestoric data;
+                data.AccountID = selectedAccount.accountID ;
+                data.amount = -much ;
+                strcpy(data.detail," ---->> you send money !! :") ;
+                getCurrentDate(data.dateop, sizeof(data.dateop));
+                savehesto(data);
+
+                data.AccountID = distAccount->accountID ;
+                data.amount = much ;
+                strcpy(data.detail,"---->> you recieve money !! :") ;
+                getCurrentDate(data.dateop, sizeof(data.dateop));
+                savehesto(data);
+            }
+            continue;
+            
+            case 5: 
+            searchByAccountID(selectedAccount.accountID);
+            printf("\n\n");
+            continue;
+            
+            case 6:
+                logIn_Account(selectedAccount.ownerID);
+            
+            default:
+                exit(0);
+            continue;
+        }
+    }
+}
+>>>>>>> origin/master
