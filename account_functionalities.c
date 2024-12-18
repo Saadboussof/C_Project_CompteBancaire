@@ -339,18 +339,30 @@ void payBills(Account *selectedAccount) {
     };
     int numFactures = sizeof(factures) / sizeof(factures[0]);
 
-    printf("\nAvailable Bills to Pay:\n");
-    printf("+---------+------------------+-----------+\n");
-    printf("|   ID    |       Name       |   Amount  |\n");
-    printf("+---------+------------------+-----------+\n");
-    for (int i = 0; i < numFactures; i++) {
-        printf("| %7d | %-16s | $%.2f     |\n", factures[i].id, factures[i].name, factures[i].amount);
-    }
-    printf("+---------+------------------+-----------+\n");
+    // Display table header
+    printf("\n\033[1;36m========== Available Bills to Pay ==========\033[0m\n");
+    printf("\033[1;33m+---------+------------------+-------------+\033[0m\n");
+    printf("\033[1;33m|   ID    |       Name       |   Amount DH |\033[0m\n");
+    printf("\033[1;33m+---------+------------------+-------------+\033[0m\n");
 
+    // Display available bills in a clean table
+    for (int i = 0; i < numFactures; i++) {
+        printf("\033[1;32m| %7d | %-16s | %10.2f DH |\033[0m\n", 
+               factures[i].id, factures[i].name, factures[i].amount);
+    }
+    printf("\033[1;33m+---------+------------------+-------------+\033[0m\n");
+    printf("\033[1;35mEnter 0 to return to the previous page.\n\033[0m");
+
+    // Input: User selects a bill by ID
     int enteredID;
-    printf("\nEnter the ID of the bill you want to pay: ");
+    printf("\n\033[1;35mEnter the ID of the bill you want to pay: \033[0m");
     scanf("%d", &enteredID);
+
+    // Allow the user to return to the previous menu
+    if (enteredID == 0) {
+        printf("\033[1;33mReturning to the previous menu...\033[0m\n");
+        return;
+    }
 
     // Search for the facture by ID
     Facture *selectedFacture = NULL;
@@ -361,14 +373,16 @@ void payBills(Account *selectedAccount) {
         }
     }
 
+    // Handle invalid ID
     if (selectedFacture == NULL) {
-        printf(RED "Error: Invalid facture ID!\n" RESET);
+        printf("\033[1;31mError: Invalid facture ID!\n\033[0m");
         return;
     }
 
     // Check if the account has sufficient balance
     if (selectedAccount->balance < selectedFacture->amount) {
-        printf(RED "Insufficient funds to pay for %s!\n" RESET, selectedFacture->name);
+        printf("\033[1;31mInsufficient funds to pay for %s (%.2f DH)!\n\033[0m", 
+               selectedFacture->name, selectedFacture->amount);
         return;
     }
 
@@ -384,7 +398,8 @@ void payBills(Account *selectedAccount) {
     getCurrentDate(data.dateop, sizeof(data.dateop));
     savehesto(data);
 
-    printf(GREEN "\nSuccess: You have paid for %s (Amount: $%.2f).\n" RESET,
+    // Success message
+    printf("\n\033[1;32mSuccess: You have paid for %s (%.2f DH).\n\033[0m",
            selectedFacture->name, selectedFacture->amount);
-    printf("Remaining Balance: $%.2f\n", selectedAccount->balance);
+    printf("\033[1;34mRemaining Balance: %.2f DH\n\033[0m", selectedAccount->balance);
 }

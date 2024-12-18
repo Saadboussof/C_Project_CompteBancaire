@@ -340,39 +340,36 @@ void updateBankCard(BankCard *updatedCard) {
 //     fclose(file); // Close the file
 // }
 void searchByAccountID(long long searchID) {
-    FILE *file = fopen("hestorical.bin", "rb"); // Open the file in binary read mode
+    FILE *file = fopen("hestorical.bin", "rb"); // Open the historical file
     if (file == NULL) {
-        perror(RED "Error opening file" RESET);
+        perror("\033[1;31mError opening historical file\033[0m");
         return;
     }
 
-    hestoric record; // Temporary variable to hold each record
+    hestoric record;
     int found = 0;
 
-    // Print table header with wider Date column
-    printf("\n+----------------+--------------------------------------+-----------------------+\n");
-    printf("|            " CYAN "HISTORICAL RECORDS FOR ACCOUNT: %lld" RESET "            |\n", searchID);
-    printf("+----------------+--------------------------------------+-----------------------+\n");
-    printf("| Amount (USD)   | Detail                               | Date                 |\n");
-    printf("+----------------+--------------------------------------+-----------------------+\n");
+    // Table Header
+    printf("\n\033[1;36m========== Historical Records for Account: %lld ==========\033[0m\n", searchID);
+    printf("\033[1;33m+-------------+--------------------------------+---------------------------+\033[0m\n");
+    printf("\033[1;33m|   Amount DH |           Detail               |           Date           |\033[0m\n");
+    printf("\033[1;33m+-------------+--------------------------------+---------------------------+\033[0m\n");
 
-    // Read records from the file
+    // Read and display each record for the given account ID
     while (fread(&record, sizeof(hestoric), 1, file) == 1) {
         if (record.AccountID == searchID) {
-            char *amountColor = record.amount < 0 ? RED : GREEN;
-
-            printf("| %s%14.2f" RESET " | %-36s | %-21s |\n",
-                   amountColor, record.amount, record.detail, record.dateop);
-
+            printf("| \033[1;32m%10.2f DH\033[0m | \033[1;34m%-30s\033[0m | \033[1;35m%-25s\033[0m |\n", 
+                   record.amount, record.detail, record.dateop);
             found = 1;
         }
     }
 
-    if (!found) {
-        printf("| " RED "No records found for the given Account ID." RESET "                   |\n");
-    }
+    // Table Footer
+    printf("\033[1;33m+-------------+--------------------------------+---------------------------+\033[0m\n");
 
-    printf("+----------------+--------------------------------------+-----------------------+\n");
+    if (!found) {
+        printf("\033[1;31mNo historical records found for this account.\033[0m\n");
+    }
 
     fclose(file); // Close the file
 }
