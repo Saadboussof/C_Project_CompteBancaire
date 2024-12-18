@@ -3,19 +3,19 @@
 
 #include "tools.h"
 
-#define GUESSING_LIMIT 3        // nbr of wrong answers before blocking the account
-#define expdate 8               // when the card will expire 
+#define GUESSING_LIMIT 3 // nbr of wrong answers before blocking the account
+#define expdate 8        // when the card will expire
 typedef struct
 {
     long long cardaccountID;
-    char cardNumber[17];       // Numéro de la carte (16 chiffres + '\0')
+    char cardNumber[17]; // Numéro de la carte (16 chiffres + '\0')
     char cardHolderName[50];
-    char expiryDate[6];        // format MM/YY
-    char cvv[4];               // 3 chiffres
-    char cardtype[17];        // Type de carte (Visa, Mastercard, etc.)
+    char expiryDate[6]; // format MM/YY
+    char cvv[4];        // 3 chiffres
+    char cardtype[17];  // Type de carte (Visa, Mastercard, etc.)
     float cardbalance;
-    int cardBlocked;         // 0 for unblocked, 1 for blocked
-    char PIN[5];           // 4-digit PIN (with null terminator)
+    int cardBlocked; // 0 for unblocked, 1 for blocked
+    char PIN[5];     // 4-digit PIN (with null terminator)
 } BankCard;
 typedef struct
 {
@@ -23,12 +23,12 @@ typedef struct
     long long ownerID;
     float balance;
     char accountType[20];
-    char PIN[5];             // 4-digit PIN (with null terminator)
-    int isBlocked;           // 0 for unblocked account
+    char PIN[5];   // 4-digit PIN (with null terminator)
+    int isBlocked; // 0 for unblocked account
     char dateCreated[23];
 
-    float *transactionHistory;  // Pointer for transaction history (optional)
-    int transactionCount;       // Number of transactions stored
+    float *transactionHistory; // Pointer for transaction history (optional)
+    int transactionCount;      // Number of transactions stored
 
 } Account;
 
@@ -60,9 +60,5 @@ void updateAccount(Account *updatedAccount);
 void displayAllAccounts();
 int rechargeOnline(Account *account);
 int payOnline(Account *account, float amount);
-void savehesto(hestoric data);
-void searchByAccountID(long long searchID);
-void formatString(char *input);
-void FUNCTION(Account selectedAccount);
 
 #endif // ACCOUNT_H
