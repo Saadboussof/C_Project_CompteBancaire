@@ -44,7 +44,7 @@ void displayBankCardInfo(Account account)
 
 void displayAllAccounts()
 {
-    FILE *file = fopen("accounts.dat", "rb");
+    FILE *file = fopen("accounts.dat", "ab");
     if (file == NULL)
     {
         printf(RED "ERROR: Failed to open the accounts file.\n" RESET);
