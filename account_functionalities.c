@@ -255,9 +255,10 @@ void FUNCTION(Account selectedAccount)
             continue;
 
         case 2:
-            printf(RED" you have not established any relationship with any of your invoices . \n"RESET);
-            printf("");
-            printf(" !!!!!! \n\n ");
+            // printf(RED" you have not established any relationship with any of your invoices . \n"RESET);
+            // printf("");
+            // printf(" !!!!!! \n\n ");
+            payBills(&selectedAccount);
             break;
 
         case 3:
@@ -327,4 +328,63 @@ void FUNCTION(Account selectedAccount)
             continue;
         }
     }
+}
+void payBills(Account *selectedAccount) {
+    // List of predefined bills
+    Facture factures[] = {
+        {19482, "Water", 50.00},
+        {29301, "Electricity", 100.00},
+        {38491, "Wifi", 60.00},
+        {47281, "Car Insurance", 200.00}
+    };
+    int numFactures = sizeof(factures) / sizeof(factures[0]);
+
+    printf("\nAvailable Bills to Pay:\n");
+    printf("+---------+------------------+-----------+\n");
+    printf("|   ID    |       Name       |   Amount  |\n");
+    printf("+---------+------------------+-----------+\n");
+    for (int i = 0; i < numFactures; i++) {
+        printf("| %7d | %-16s | $%.2f     |\n", factures[i].id, factures[i].name, factures[i].amount);
+    }
+    printf("+---------+------------------+-----------+\n");
+
+    int enteredID;
+    printf("\nEnter the ID of the bill you want to pay: ");
+    scanf("%d", &enteredID);
+
+    // Search for the facture by ID
+    Facture *selectedFacture = NULL;
+    for (int i = 0; i < numFactures; i++) {
+        if (factures[i].id == enteredID) {
+            selectedFacture = &factures[i];
+            break;
+        }
+    }
+
+    if (selectedFacture == NULL) {
+        printf(RED "Error: Invalid facture ID!\n" RESET);
+        return;
+    }
+
+    // Check if the account has sufficient balance
+    if (selectedAccount->balance < selectedFacture->amount) {
+        printf(RED "Insufficient funds to pay for %s!\n" RESET, selectedFacture->name);
+        return;
+    }
+
+    // Deduct amount and update balance
+    selectedAccount->balance -= selectedFacture->amount;
+    updateAccount(selectedAccount);
+
+    // Log the transaction into historical
+    hestoric data;
+    data.AccountID = selectedAccount->accountID;
+    data.amount = -selectedFacture->amount;
+    snprintf(data.detail, sizeof(data.detail), "Paid bill: %s", selectedFacture->name);
+    getCurrentDate(data.dateop, sizeof(data.dateop));
+    savehesto(data);
+
+    printf(GREEN "\nSuccess: You have paid for %s (Amount: $%.2f).\n" RESET,
+           selectedFacture->name, selectedFacture->amount);
+    printf("Remaining Balance: $%.2f\n", selectedAccount->balance);
 }

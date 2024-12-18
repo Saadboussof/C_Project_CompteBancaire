@@ -31,7 +31,11 @@ typedef struct
     int transactionCount;      // Number of transactions stored
 
 } Account;
-
+typedef struct {
+    int id;             // Unique ID for the bill
+    char name[50];      // Bill name (Water, Wifi, etc.)
+    float amount;       // Amount to pay
+} Facture;
 // the news by saad
 typedef struct 
 {
@@ -65,5 +69,5 @@ void searchByAccountID(long long searchID);
 void formatString(char *input);
 void FUNCTION(Account selectedAccount);
 void handleCategorySpecificAction(int choice);
-
+void payBills(Account *selectedAccount);
 #endif // ACCOUNT_H

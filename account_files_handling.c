@@ -279,29 +279,100 @@ void updateBankCard(BankCard *updatedCard) {
 }
 
 // Function to search for a record by AccountID and display it
+// void searchByAccountID(long long searchID) {
+//     FILE *file = fopen("hestorical.bin", "rb"); // Open the file in binary read mode
+//     if (file == NULL) {
+//         perror("Error opening file");
+//     }
+
+//     hestoric record; // Temporary variable to hold each record
+//     int found = 0;
+
+//     // Read records from the file one by one
+//     while (fread(&record, sizeof(hestoric), 1, file) == 1) {
+//         if (record.AccountID == searchID) { // Compare the AccountID
+//             printf("Amount: %.2f\t", record.amount);
+//             printf("Detail: %s\t", record.detail);
+//             printf("Date: %s\n", record.dateop);
+//             found = 1;
+//             // break; // Exit the loop once the record is found
+//         }
+//     }
+
+//     if (!found) {
+//         printf("No record found");
+//     }
+
+//     fclose(file); // Close the file
+// }
+// void searchByAccountID(long long searchID) {
+//     FILE *file = fopen("hestorical.bin", "rb"); // Open the file in binary read mode
+//     if (file == NULL) {
+//         perror(RED "Error opening file" RESET);
+//         return;
+//     }
+
+//     hestoric record; // Temporary variable to hold each record
+//     int found = 0;
+
+//     // Print table header
+//     printf("\n" CYAN "=========== Historical Records for Account: %lld ===========" RESET "\n", searchID);
+//     printf("\n" BLUE "Amount (USD)       | Detail                         | Date" RESET "\n");
+//     printf("-------------------------------------------------------------\n");
+
+//     // Read records from the file one by one
+//     while (fread(&record, sizeof(hestoric), 1, file) == 1) {
+//         if (record.AccountID == searchID) { // Compare the AccountID
+//             printf("%-20.2f | %-30s | %s\n", 
+//                    record.amount, 
+//                    record.detail, 
+//                    record.dateop);
+//             found = 1;
+//         }
+//     }
+
+//     // If no records found
+//     if (!found) {
+//         printf(RED "No records found for the given Account ID.\n" RESET);
+//     }
+
+//     printf("-------------------------------------------------------------\n");
+//     fclose(file); // Close the file
+// }
 void searchByAccountID(long long searchID) {
     FILE *file = fopen("hestorical.bin", "rb"); // Open the file in binary read mode
     if (file == NULL) {
-        perror("Error opening file");
+        perror(RED "Error opening file" RESET);
+        return;
     }
 
     hestoric record; // Temporary variable to hold each record
     int found = 0;
 
-    // Read records from the file one by one
+    // Print table header with wider Date column
+    printf("\n+----------------+--------------------------------------+-----------------------+\n");
+    printf("|            " CYAN "HISTORICAL RECORDS FOR ACCOUNT: %lld" RESET "            |\n", searchID);
+    printf("+----------------+--------------------------------------+-----------------------+\n");
+    printf("| Amount (USD)   | Detail                               | Date                 |\n");
+    printf("+----------------+--------------------------------------+-----------------------+\n");
+
+    // Read records from the file
     while (fread(&record, sizeof(hestoric), 1, file) == 1) {
-        if (record.AccountID == searchID) { // Compare the AccountID
-            printf("Amount: %.2f\t", record.amount);
-            printf("Detail: %s\t", record.detail);
-            printf("Date: %s\n", record.dateop);
+        if (record.AccountID == searchID) {
+            char *amountColor = record.amount < 0 ? RED : GREEN;
+
+            printf("| %s%14.2f" RESET " | %-36s | %-21s |\n",
+                   amountColor, record.amount, record.detail, record.dateop);
+
             found = 1;
-            // break; // Exit the loop once the record is found
         }
     }
 
     if (!found) {
-        printf("No record found");
+        printf("| " RED "No records found for the given Account ID." RESET "                   |\n");
     }
+
+    printf("+----------------+--------------------------------------+-----------------------+\n");
 
     fclose(file); // Close the file
 }
