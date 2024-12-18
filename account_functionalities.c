@@ -270,6 +270,7 @@ void FUNCTION(Account selectedAccount)
         case 4:
             long long ID;
             Account *distAccount;
+            int i = 0 ;
             while (1)
             {
                 printf(" give the ID o the account you want to send money to : ");
@@ -278,12 +279,13 @@ void FUNCTION(Account selectedAccount)
                 distAccount = searchAccountByID(ID);
                 if (distAccount == NULL)
                 {
-                    printf(" the account does not exist in databases !! \n try again !! \n\n\n");
+                   printf(" the account does not exist in databases !! \n try again !! \n\n\n");
                 }
-                else
-                    break;
+                else break;
+                i++ ;
+                if( i == 3 ) break ;
             }
-
+            if( i == 3 ) continue;
             printf("\n how much you want to sent ? : ");
             float much;
             scanf("%f", &much);
