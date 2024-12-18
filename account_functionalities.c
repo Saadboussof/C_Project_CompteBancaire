@@ -256,6 +256,7 @@ void FUNCTION(Account selectedAccount)
 
         case 2:
             printf(RED" you have not established any relationship with any of your invoices . \n"RESET);
+            printf("");
             printf(" !!!!!! \n\n ");
             break;
 
