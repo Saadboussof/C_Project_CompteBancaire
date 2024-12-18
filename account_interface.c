@@ -95,22 +95,21 @@ void logIn_Account(long long ownerID)
         free(accountOptions);
     }
 }
-
 void formatString(char *input)
 {
     int len = strlen(input);
-    printf("==> ");
+    // Affichage
+    printf("\n%s==> %s", CYAN, GREEN );
     for (int i = 0; i < len; i++)
     {
         printf("%c", input[i]);
 
-        // Insert a space after every 4 characters
         if ((i + 1) % 4 == 0 && i != len - 1)
         {
             printf(" ");
         }
     }
-    printf(" <==\n\n\n");
+    printf(CYAN"%s <==\n\n\n", RESET);
 }
 
 void savehesto(hestoric data)
