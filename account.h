@@ -70,5 +70,7 @@ void printHeader(const char *title);
 void logPaidBill(long long accountID, int billID);
 int isBillPaid(long long accountID, int billID);
 void savehesto(hestoric data);
+void transferBalanceToCard(Account *account, BankCard *bankCard);
+
 
 #endif // ACCOUNT_H

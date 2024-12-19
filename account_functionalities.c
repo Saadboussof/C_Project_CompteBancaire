@@ -122,6 +122,7 @@ char *Choicess[] = {
     "Card number",
     "Transaction",
     "History",
+    "transfertcard",
     "Return",
     "Exit",
     NULL};
@@ -203,8 +204,17 @@ void FUNCTION(Account selectedAccount)
             searchByAccountID(selectedAccount.accountID);
             printf("\n\n");
             continue;
-
-        case 6:
+        case 6:{
+            // Transfer balance to card
+            BankCard bankCard = searchBankCardByaccountID(selectedAccount.accountID);
+            if (bankCard.cardaccountID == 0) {
+                printf(RED "No bank card is associated with this account.\n" RESET);
+                continue;
+            }
+            transferBalanceToCard(&selectedAccount, &bankCard);
+            continue;
+        }
+        case 7:
             logIn_Account(selectedAccount.ownerID);
 
         default:
@@ -213,7 +223,46 @@ void FUNCTION(Account selectedAccount)
         }
     }
 }
+void transferBalanceToCard(Account *account, BankCard *bankCard) {
+    printf("\n\033[1;36m------ Transfer Balance to Card ------\033[0m\n");
+    printf("\033[1;35mYour current account balance: %.2f DH\033[0m\n", account->balance);
 
+    if (account->balance <= 0) {
+        printf("\033[1;31mError: Insufficient account balance to transfer!\033[0m\n");
+        return;
+    }
+
+    float transferAmount;
+    while (1) {
+        printf("\033[1;34mEnter the amount to transfer to your card: \033[0m");
+        scanf("%f", &transferAmount);
+
+        if (transferAmount <= 0 || transferAmount > account->balance) {
+            printf("\033[1;31mInvalid amount. Please enter a valid amount less than or equal to your account balance.\033[0m\n");
+        } else {
+            break;
+        }
+    }
+    // Deduct amount from account balance and add to card balance
+    account->balance -= transferAmount;
+    bankCard->cardbalance += transferAmount;
+
+    // Update both the account and bank card in the database
+    updateAccount(account);
+    updateBankCard(bankCard);
+
+    // Log the transaction in history
+    hestoric data;
+    data.AccountID = account->accountID;
+    data.amount = -transferAmount;
+    strcpy(data.detail, "-> Transferred balance to card.");
+    getCurrentDate(data.dateop, sizeof(data.dateop));
+    savehesto(data);
+
+    printf("\n\033[1;32mSuccess: %.2f DH has been transferred to your card.\033[0m\n", transferAmount);
+    printf("\033[1;34mUpdated Account Balance: %.2f DH\n\033[0m", account->balance);
+    printf("\033[1;34mUpdated Card Balance: %.2f DH\n\033[0m", bankCard->cardbalance);
+}
 void logPaidBill(long long accountID, int billID) {
     char filename[50];
     sprintf(filename, "paid_bills_%lld.txt", accountID);
