@@ -130,16 +130,77 @@ void updateEmployeeDetails(Employee *loggedInEmployee)
 
         Employee employee;
         while (fread(&employee, sizeof(Employee), 1, file) == 1)
-        {
-            if (employee.employeeID == loggedInEmployee->employeeID)
-            {
-                fseek(file, -sizeof(Employee), SEEK_CUR);
-                fwrite(loggedInEmployee, sizeof(Employee), 1, file);
-                printf(GREEN "Employee details updated successfully in the file.\n" RESET);
-                break;
-            }
-        }
+{
+    if (employee.employeeID == loggedInEmployee->employeeID)
+    {
+        fseek(file, -(long)sizeof(Employee), SEEK_CUR);  // Cast to long to avoid overflow warning
+        fwrite(loggedInEmployee, sizeof(Employee), 1, file);
+        printf(GREEN "Employee details updated successfully in the file.\n" RESET);
+        break;
+    }
+}
+
         fclose(file);
     }
 }
 
+
+
+void deleteEmployee(Employee *loggedInEmployee)
+{
+    // Ensure the user has logged in and is an admin
+    if (loggedInEmployee == NULL || loggedInEmployee->isAdmin != 1)
+    {
+        printf(RED "ERROR: Access Denied.\n" RESET);
+        printf(YELLOW "Only admin users can delete employees.\n" RESET);
+        return;
+    }
+
+    FILE *file = fopen("employees.dat", "rb");
+    FILE *tempFile = fopen("temp.dat", "wb");
+
+    if (file == NULL || tempFile == NULL)
+    {
+        printf(RED "ERROR: Failed to access employee database.\n" RESET);
+        printf(YELLOW "Please report this issue to the technical team.\n" RESET);
+        if (file) fclose(file);
+        if (tempFile) fclose(tempFile);
+        return;
+    }
+
+    long long targetEmployeeID;
+    printf(BLUE "Enter the Employee ID to delete: " RESET);
+    scanf("%lld", &targetEmployeeID);
+
+    Employee employee;
+    int isDeleted = 0;
+
+    // Read employees and copy only non-matching ones to the temporary file
+    while (fread(&employee, sizeof(Employee), 1, file) == 1)
+    {
+        if (employee.employeeID == targetEmployeeID)
+        {
+            isDeleted = 1; // Mark as deleted
+            printf(GREEN "Employee with ID %lld successfully deleted.\n" RESET, targetEmployeeID);
+        }
+        else
+        {
+            fwrite(&employee, sizeof(Employee), 1, tempFile);
+        }
+    }
+
+    fclose(file);
+    fclose(tempFile);
+
+    // Replace the original file with the updated temporary file
+    if (isDeleted)
+    {
+        remove("employees.dat");
+        rename("temp.dat", "employees.dat");
+    }
+    else
+    {
+        printf(ORANGE "No employee found with ID %lld.\n" RESET, targetEmployeeID);
+        remove("temp.dat");
+    }
+}
