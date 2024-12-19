@@ -243,124 +243,6 @@ int rechargeOnline(Account *account)
 
     return 1; // Recharge réussie
 }
-typedef struct
-{
-    char name[30];
-    float totalSpent;
-    float budget;
-} Category;
-typedef struct
-{
-    char description[50];
-    char category[30];
-    float amount;
-} Transaction;
-
-Category categories[MAX_CATEGORIES];
-int categoryCount = 5;
-
-// Initialize Categories with Specific Purposes
-void initializeCategories()
-{
-    strcpy(categories[0].name, "Groceries");
-    categories[0].budget = 200.0;
-
-    strcpy(categories[1].name, "Bills");
-    categories[1].budget = 500.0;
-
-    strcpy(categories[2].name, "Entertainment");
-    categories[2].budget = 100.0;
-
-    strcpy(categories[3].name, "Transportation");
-    categories[3].budget = 150.0;
-
-    strcpy(categories[4].name, "Others");
-    categories[4].budget = 50.0;
-
-    for (int i = 0; i < categoryCount; i++)
-    {
-        categories[i].totalSpent = 0.0;
-    }
-}
-
-char *Categories[] = {
-    "Groceries",
-    "Bills",
-    "Entertainment",
-    "Transportation",
-    "Others",
-    "Add new categorie",
-    NULL};
-
-void payOnline(Account *account)
-{
-    BankCard cardpayment = searchBankCardByaccountID(account->accountID);
-
-    char description[50];
-    float amount;
-    int categoryChoice;
-
-    printf("Enter the amount to pay : DH ");
-    scanf("%f", &amount);
-
-    if (amount > cardpayment.cardbalance)
-    {
-        printf(RED "Insufficient funds! Payment cannot be processed.\n" RESET);
-        return;
-    }
-
-    int choice = choose_item(Categories, "Select a category");
-
-    if (amount > categories[choice].budget - categories[choice].totalSpent)
-    {
-        printf(RED "You're out of the categorie %s's budget.\n" RESET, categories[choice]);
-        return;
-    }
-
-    printf("Enter a description for this payment: ");
-    scanf(" %[^\n]", description);
-
-    // Deduct from card balance and update category spending
-    cardpayment.cardbalance -= amount;
-    categories[choice].totalSpent += amount;
-
-    // Transaction transaction;             FIXME: // it gonna be the history struct and its functions
-    // // Record the transaction
-    // strcpy(transactions[transactionCount].description, description);
-    // strcpy(transactions[transactionCount].category, categories[selectedCategory].name);
-    // transactions[transactionCount].amount = amount;
-    // transactionCount++;
-
-    printf(GREEN "Payment of %.2fDH for '%s' categorized as '%s' has been processed successfully.\n" RESET, amount, description, categories[choice].name);
-
-    // Perform category-specific action
-    handleCategorySpecificAction(choice);
-}
-
-// Perform Category-Specific Actions
-void handleCategorySpecificAction(int choice)
-{
-    switch (choice)
-    {
-    case 0:
-        printf(CYAN "\n** Tip: Buying in bulk could save you money! **\n" RESET);
-        break;
-    case 1:
-        printf(CYAN "\n** Set up recurring payments for your convenience. **\n" RESET);
-        break;
-    case 2:
-        printf(CYAN "\n** Reminder: Stay within your entertainment budget for savings. **\n" RESET);
-        break;
-    case 3:
-        printf(CYAN "\n** Did you know? Tracking your mileage could help optimize fuel costs. **\n" RESET);
-        break;
-    case 4:
-        printf(CYAN "\n** Note: Record any special details about this payment for future reference. **\n" RESET);
-        break;
-    default:
-        break;
-    }
-}
 
 char *Choicess[] = {
     "Display info",
@@ -460,9 +342,41 @@ void FUNCTION(Account selectedAccount)
         }
     }
 }
+void logPaidBill(long long accountID, int billID) {
+    char filename[50];
+    sprintf(filename, "paid_bills_%lld.txt", accountID);
+
+    FILE *file = fopen(filename, "a"); // Append to the file
+    if (!file) {
+        printf("\033[1;31mError: Unable to log the paid bill!\033[0m\n");
+        return;
+    }
+    fprintf(file, "%d\n", billID); // Log the bill ID
+    fclose(file);
+}
+
+int isBillPaid(long long accountID, int billID) {
+    char filename[50];
+    sprintf(filename, "paid_bills_%lld.txt", accountID);
+
+    FILE *file = fopen(filename, "r");
+    if (!file) {
+        return 0; // If file doesn't exist, no bills are paid yet
+    }
+
+    int id;
+    while (fscanf(file, "%d", &id) == 1) {
+        if (id == billID) {
+            fclose(file);
+            return 1; // Bill is already paid
+        }
+    }
+    fclose(file);
+    return 0;
+}
 
 void payBills(Account *selectedAccount) {
-    // List of predefined bills
+    // Static list of predefined bills
     Facture factures[] = {
         {19482, "Water", 50.00},
         {29301, "Electricity", 100.00},
@@ -471,67 +385,94 @@ void payBills(Account *selectedAccount) {
     };
     int numFactures = sizeof(factures) / sizeof(factures[0]);
 
-    // Display table header
-    printf("\n\033[1;36m========== Available Bills to Pay ============\033[0m\n");
-    printf("\033[1;33m+---------+------------------+---------------+\033[0m\n");
-    printf("\033[1;33m|   ID    |       Name       |   Amount DH   |\033[0m\n");
-    printf("\033[1;33m+---------+------------------+---------------+\033[0m\n");
+    while (1) {
+        // Display unpaid bills
+        printf("\n\033[1;36m========== Available Bills to Pay ==========\033[0m\n");
+        printf("\033[1;33m+---------+------------------+-------------+\033[0m\n");
+        printf("\033[1;33m|   ID    |       Name       |   Amount DH |\033[0m\n");
+        printf("\033[1;33m+---------+------------------+-------------+\033[0m\n");
 
-    // Display available bills in a clean table
-    for (int i = 0; i < numFactures; i++) {
-        printf("\033[1;32m| %7d | %-16s | %10.2f DH |\033[0m\n", 
-               factures[i].id, factures[i].name, factures[i].amount);
-    }
-    printf("\033[1;33m+---------+------------------+---------------+\033[0m\n");
-    printf("\033[1;35mEnter 0 to return to the previous page.\n\033[0m");
-
-    // Input: User selects a bill by ID
-    int enteredID;
-    printf("\n\033[1;35mEnter the ID of the bill you want to pay: \033[0m");
-    scanf("%d", &enteredID);
-
-    // Allow the user to return to the previous menu
-    if (enteredID == 0) {
-        printf("\033[1;33mReturning to the previous menu...\033[0m\n");
-        return;
-    }
-
-    // Search for the facture by ID
-    Facture *selectedFacture = NULL;
-    for (int i = 0; i < numFactures; i++) {
-        if (factures[i].id == enteredID) {
-            selectedFacture = &factures[i];
-            break;
+        int availableBills = 0;
+        for (int i = 0; i < numFactures; i++) {
+            if (factures[i].id != 0 && !isBillPaid(selectedAccount->accountID, factures[i].id)) {
+                printf("\033[1;32m| %7d | %-16s | %10.2f DH |\033[0m\n",
+                       factures[i].id, factures[i].name, factures[i].amount);
+                availableBills++;
+            }
         }
-    }
+        printf("\033[1;33m+---------+------------------+-------------+\033[0m\n");
 
-    // Handle invalid ID
-    if (selectedFacture == NULL) {
-        printf("\033[1;31mError: Invalid facture ID!\n\033[0m");
-        return;
-    }
+        // If no bills are left to pay
+        if (availableBills == 0) {
+            printf("\033[1;32mAll bills are paid! No bills available.\033[0m\n");
+            return;
+        }
 
-    // Check if the account has sufficient balance
-    if (selectedAccount->balance < selectedFacture->amount) {
-        printf("\033[1;31mInsufficient funds to pay for %s (%.2f DH)!\n\033[0m", 
+        printf("\033[1;35mEnter 0 to return to the previous page.\033[0m\n");
+
+        // Input: User selects a bill by ID
+        char enteredInput[10];
+        printf("\n\033[1;35mEnter the ID of the bill you want to pay: \033[0m");
+        scanf("%s", enteredInput);
+
+        // Validate input
+        int isNumeric = 1;
+        for (int i = 0; enteredInput[i] != '\0'; i++) {
+            if (enteredInput[i] < '0' || enteredInput[i] > '9') {
+                isNumeric = 0;
+                break;
+            }
+        }
+
+        if (!isNumeric) {
+            printf("\033[1;31mError: Invalid input! Please enter a valid numeric ID.\033[0m\n");
+            continue;
+        }
+
+        int enteredID = atoi(enteredInput);
+        if (enteredID == 0) {
+            printf("\033[1;33mReturning to the previous menu...\033[0m\n");
+            return;
+        }
+
+        // Search for the facture by ID
+        Facture *selectedFacture = NULL;
+        for (int i = 0; i < numFactures; i++) {
+            if (factures[i].id == enteredID) {
+                selectedFacture = &factures[i];
+                break;
+            }
+        }
+
+        if (!selectedFacture || selectedFacture->id == 0 || isBillPaid(selectedAccount->accountID, enteredID)) {
+            printf("\033[1;31mError: Invalid or already paid bill ID!\033[0m\n");
+            continue;
+        }
+
+        // Check if the account has sufficient balance
+        if (selectedAccount->balance < selectedFacture->amount) {
+            printf("\033[1;31mInsufficient funds to pay for %s (%.2f DH)!\033[0m\n",
+                   selectedFacture->name, selectedFacture->amount);
+            continue;
+        }
+
+        // Deduct the amount and update balance
+        selectedAccount->balance -= selectedFacture->amount;
+        updateAccount(selectedAccount);
+
+        // Log the transaction
+        hestoric data;
+        data.AccountID = selectedAccount->accountID;
+        data.amount = -selectedFacture->amount;
+        snprintf(data.detail, sizeof(data.detail), "Paid bill: %s", selectedFacture->name);
+        getCurrentDate(data.dateop, sizeof(data.dateop));
+        savehesto(data);
+
+        // Log the bill as paid
+        logPaidBill(selectedAccount->accountID, enteredID);
+
+        printf("\n\033[1;32mSuccess: You have paid for %s (%.2f DH).\033[0m\n",
                selectedFacture->name, selectedFacture->amount);
-        return;
+        printf("\033[1;34mRemaining Balance: %.2f DH\n\033[0m", selectedAccount->balance);
     }
-
-    // Deduct amount and update balance
-    selectedAccount->balance -= selectedFacture->amount;
-    updateAccount(selectedAccount);
-
-    // Log the transaction into historical
-    hestoric data;
-    data.AccountID = selectedAccount->accountID;
-    data.amount = -selectedFacture->amount;
-    snprintf(data.detail, sizeof(data.detail), "Paid bill: %s", selectedFacture->name);
-    getCurrentDate(data.dateop, sizeof(data.dateop));
-    savehesto(data);
-
-    // Success message
-    printf("\n\033[1;32mSuccess: You have paid for %s (%.2f DH).\n\033[0m",
-           selectedFacture->name, selectedFacture->amount);
-    printf("\033[1;34mRemaining Balance: %.2f DH\n\033[0m", selectedAccount->balance);
 }
