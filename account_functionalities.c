@@ -1,210 +1,538 @@
 #include "account.h"
 
-int payOnline(Account *account, float amount) 
+#define MAX_CATEGORIES 20 // max number of payment categories
+
+// int rechargeOnline(Account *account)
+// {
+//     char *TELECOM_PROVIDERS[] = {"Inwi",
+//                                  "Orange",
+//                                  "Maroc Telecom",
+//                                  NULL};
+//     char *RECHARGE_AMOUNTS[] = {"5 DH",
+//                                 "10 DH",
+//                                 "20 DH",
+//                                 "50 DH",
+//                                 "100 DH",
+//                                 "200 DH",
+//                                 "500 DH",
+//                                 "Other",
+//                                 NULL};
+//     char *RECHARGE_TYPES[] = {"*1",
+//                               "*2",
+//                               "*3",
+//                               "*6",
+//                               "*25",
+//                               "Normal",
+//                               NULL};
+
+//     char phoneNumber[11] = "";
+//     int amount;
+
+//     Client *linkedClient = findClient("0", account->ownerID, 0);
+//     printf("Linked phone number found: " GREEN "%s\n" RESET, linkedClient->phoneNumber);
+//     printf(ORANGE "Do you want to recharge this number? (y/n): " RESET);
+
+//     char response[2];
+//     scanf("%1s", response);
+//     response[0] = tolower(response[0]); // Convert to lowercase
+
+//     if (strcmp(response, "y") == 0)
+//     {
+//         strcpy(phoneNumber, linkedClient->phoneNumber);
+//     }
+//     else
+//     {
+//         printf(CYAN "Enter the phone number you want to recharge: " RESET);
+//         scanf("%10s", phoneNumber);
+//     }
+
+//     // Step 1: Choose telecom provider
+//     int providerIndex = choose_item(TELECOM_PROVIDERS, "Choose Telecom Provider");
+//     printf(GREEN "Selected provider: %s\n" RESET, TELECOM_PROVIDERS[providerIndex]);
+
+//     // Step 2: Choose recharge amount
+//     int amountIndex = choose_item(RECHARGE_AMOUNTS, "Choose Recharge Amount");
+
+//     switch (amountIndex)
+//     {
+//     case 0:
+//         amount = 5;
+//         break;
+//     case 1:
+//         amount = 10;
+//         break;
+//     case 2:
+//         amount = 20;
+//         break;
+//     case 3:
+//         amount = 50;
+//         break;
+//     case 4:
+//         amount = 100;
+//         break;
+//     case 5:
+//         amount = 200;
+//         break;
+//     case 6:
+//         amount = 500;
+//         break;
+//     default:
+//         printf(ORANGE "Entre the amount of recharge: " RESET);
+//         scanf("%d", &amount);
+//         break;
+//     }
+
+//     if (account->balance < (float)amount)
+//     {
+//         printf(RED "Recharge failed: Insufficient funds.\n" RESET);
+//         return 0; // Recharge failed
+//     }
+//     hestoric data;
+//     data.AccountID = account->accountID;
+//     data.amount = -amount;
+//     strcpy(data.detail, "you did a Recharge");
+//     getCurrentDate(data.dateop, sizeof(data.dateop));
+//     savehesto(data);
+//     // Step 3: Choose recharge type
+//     int rechargeTypeIndex = choose_item(RECHARGE_TYPES, "Choose Recharge Type");
+//     printf(GREEN "Selected recharge type: %s\n" RESET, RECHARGE_TYPES[rechargeTypeIndex]);
+
+//     // Step 4: Deduct the amount from the card balance and update
+//     account->balance -= (float)amount;
+//     updateAccount(account);
+//     printf(GREEN "Recharge successful!\n" RESET);
+//     printf("Details:\n");
+//     printf(PURPLE "Phone Number   : " RESET "%s\n", phoneNumber);
+//     printf(PURPLE "Recharge Amount: " RESET "%d\n", amount);
+//     printf(PURPLE "Recharge Type  : " RESET "%s\n", RECHARGE_TYPES[rechargeTypeIndex]);
+
+//     printf(CYAN "Remaining balance: " RESET "%.2f\n", account->balance);
+//     return 1; // Recharge successful
+// }
+void printHeader(const char *title)
 {
-    if (account->balance < amount) {
-        printf(RED "Transaction failed: Insufficient funds.\n" RESET);
-        return 0; // Payment failed
+    printf("\n" CYAN "=================================================\n" RESET);
+    printf(GREEN "                   %s                    \n" RESET, title);
+    printf(CYAN "=================================================\n" RESET);
+}
+
+// Fonction pour afficher un menu avec possibilité de retour
+int choose_item_with_return(char *items[], const char *message)
+{
+    int i, choice;
+    printf("\n" ORANGE "%s:\n" RESET, message);
+    for (i = 0; items[i] != NULL; i++)
+    {
+        printf(GREEN " [%d] %s\n" RESET, i + 1, items[i]);
     }
+    printf(RED " [0] Return\n" RESET); // Option pour revenir en arrière
+    printf(ORANGE "Enter your choice: " RESET);
+    scanf("%d", &choice);
 
-    // Deduct the amount from the card balance
-    account->balance -= amount;
-    updateAccount(account); // Update account file
-
-    printf(GREEN "Payment of %.2f was successful! Remaining balance: %.2f\n" RESET, amount, account->balance);
-    return 1; // Payment successful
+    if (choice == 0)
+    {
+        printf(RED "Operation cancelled. Returning to the main menu...\n" RESET);
+        return -1; // Indiquer un retour
+    }
+    return choice - 1; // Retourner l'index sélectionné
 }
 
 int rechargeOnline(Account *account)
 {
-    char *TELECOM_PROVIDERS[] = {"Inwi", 
-                                 "Orange", 
-                                 "Maroc Telecom", 
-                                 NULL};
-    char *RECHARGE_AMOUNTS[] = {"5 DH", 
-                                "10 DH", 
-                                "20 DH", 
-                                "50 DH", 
-                                "100 DH", 
-                                "200 DH", 
-                                "500 DH", 
-                                "Other", 
-                                NULL};
-    char *RECHARGE_TYPES[] = {"*1", 
-                              "*2", 
-                              "*3", 
-                              "*6", 
-                              "*25", 
-                              "Normal", 
-                              NULL};
+    char *TELECOM_PROVIDERS[] = {"Inwi", "Orange", "Maroc Telecom", NULL};
+    char *RECHARGE_AMOUNTS[] = {"5 DH", "10 DH", "20 DH", "50 DH", "100 DH", "200 DH", "500 DH", "Other", NULL};
+    char *RECHARGE_TYPES[] = {"*1", "*2", "*3", "*6", "*25", "Normal", NULL};
 
     char phoneNumber[11] = "";
     int amount;
 
     Client *linkedClient = findClient("0", account->ownerID, 0);
+    printHeader("Recharge Your Phone");
+
+    // Étape 1: Obtenir le numéro de téléphone
     printf("Linked phone number found: " GREEN "%s\n" RESET, linkedClient->phoneNumber);
     printf(ORANGE "Do you want to recharge this number? (y/n): " RESET);
-    
+
     char response[2];
     scanf("%1s", response);
-    response[0] = tolower(response[0]);     // Convert to lowercase
-    
-    if (strcmp(response, "y") == 0) 
+    response[0] = tolower(response[0]);
+
+    if (strcmp(response, "y") == 0)
     {
         strcpy(phoneNumber, linkedClient->phoneNumber);
-    } else {
+    }
+    else
+    {
         printf(CYAN "Enter the phone number you want to recharge: " RESET);
         scanf("%10s", phoneNumber);
     }
 
-    // Step 1: Choose telecom provider
+    // Étape 2: Choisir le fournisseur
     int providerIndex = choose_item(TELECOM_PROVIDERS, "Choose Telecom Provider");
+    if (providerIndex == -1) return 0;
+
     printf(GREEN "Selected provider: %s\n" RESET, TELECOM_PROVIDERS[providerIndex]);
 
-    // Step 2: Choose recharge amount
+    // Étape 3: Choisir le montant de la recharge
     int amountIndex = choose_item(RECHARGE_AMOUNTS, "Choose Recharge Amount");
+    if (amountIndex == -1) return 0;
 
     switch (amountIndex)
     {
-        case 0:
-            amount = 5;
-            break;
-        case 1:
-            amount = 10;
-            break;
-        case 2:
-            amount = 20;
-            break;
-        case 3:
-            amount = 50;
-            break;
-        case 4:
-            amount = 100;
-            break;
-        case 5:
-            amount = 200;
-            break;
-        case 6:
-            amount = 500;
-            break;
-        default:
-            printf(ORANGE "Entre the amount of recharge: " RESET);
-            scanf("%d", &amount);
-            break;
+    case 0: amount = 5; break;
+    case 1: amount = 10; break;
+    case 2: amount = 20; break;
+    case 3: amount = 50; break;
+    case 4: amount = 100; break;
+    case 5: amount = 200; break;
+    case 6: amount = 500; break;
+    default:
+        printf(ORANGE "Enter the amount of recharge: " RESET);
+        scanf("%d", &amount);
+        break;
     }
 
-    if (account->balance < (float)amount) 
+    // Vérifier si le solde est suffisant
+    if (account->balance < (float)amount)
     {
         printf(RED "Recharge failed: Insufficient funds.\n" RESET);
-        return 0; // Recharge failed
+        return 0;
     }
-    hestoric data;
-    data.AccountID = account->accountID ;
-    data.amount = -amount ;
-    strcpy(data.detail,"you did a Recharge") ;
-    getCurrentDate(data.dateop, sizeof(data.dateop));
-    savehesto(data);
-    // Step 3: Choose recharge type
+
+    // Étape 4: Choisir le type de recharge
     int rechargeTypeIndex = choose_item(RECHARGE_TYPES, "Choose Recharge Type");
+    if (rechargeTypeIndex == -1) return 0;
+
     printf(GREEN "Selected recharge type: %s\n" RESET, RECHARGE_TYPES[rechargeTypeIndex]);
 
-    // Step 4: Deduct the amount from the card balance and update
+    // Étape 5: Confirmer avant la déduction
+    printf("\n" CYAN "You are about to recharge:\n" RESET);
+    printf(GREEN "Phone Number   : %s\n" RESET, phoneNumber);
+    printf(GREEN "Recharge Amount: %d DH\n" RESET, amount);
+    printf(GREEN "Recharge Type  : %s\n" RESET, RECHARGE_TYPES[rechargeTypeIndex]);
+    printf(RED "Do you confirm? (y/n): " RESET);
+    scanf("%1s", response);
+
+    if (tolower(response[0]) != 'y')
+    {
+        printf(RED "Operation cancelled.\n" RESET);
+        return 0;
+    }
+
+    // Étape 6: Déduire le montant du solde
     account->balance -= (float)amount;
     updateAccount(account);
-    printf(GREEN "Recharge successful!\n" RESET);
-    printf("Details:\n");
-    printf(PURPLE "Phone Number   : " RESET "%s\n", phoneNumber);
-    printf(PURPLE "Recharge Amount: " RESET "%d\n", amount);
-    printf(PURPLE "Recharge Type  : " RESET "%s\n", RECHARGE_TYPES[rechargeTypeIndex]);
 
-    printf(CYAN "Remaining balance: " RESET "%.2f\n", account->balance);
-    return 1; // Recharge successful
+    // Enregistrer l'historique
+    hestoric data;
+    data.AccountID = account->accountID;
+    data.amount = -amount;
+    strcpy(data.detail, "you did a Recharge");
+    getCurrentDate(data.dateop, sizeof(data.dateop));
+    savehesto(data);
+
+    // Affichage des détails finaux
+    printf("\n" GREEN "Recharge successful!\n" RESET);
+    printf(BLUE "====================================\n" RESET);
+    printf(PURPLE "Phone Number   : " RESET "%s\n", phoneNumber);
+    printf(PURPLE "Recharge Amount: " RESET "%d DH\n", amount);
+    printf(PURPLE "Recharge Type  : " RESET "%s\n", RECHARGE_TYPES[rechargeTypeIndex]);
+    printf(PURPLE "Remaining Balance: " RESET "%.2f DH\n", account->balance);
+    printf(BLUE "====================================\n\n" RESET);
+
+    return 1; // Recharge réussie
+}
+typedef struct
+{
+    char name[30];
+    float totalSpent;
+    float budget;
+} Category;
+typedef struct
+{
+    char description[50];
+    char category[30];
+    float amount;
+} Transaction;
+
+Category categories[MAX_CATEGORIES];
+int categoryCount = 5;
+
+// Initialize Categories with Specific Purposes
+void initializeCategories()
+{
+    strcpy(categories[0].name, "Groceries");
+    categories[0].budget = 200.0;
+
+    strcpy(categories[1].name, "Bills");
+    categories[1].budget = 500.0;
+
+    strcpy(categories[2].name, "Entertainment");
+    categories[2].budget = 100.0;
+
+    strcpy(categories[3].name, "Transportation");
+    categories[3].budget = 150.0;
+
+    strcpy(categories[4].name, "Others");
+    categories[4].budget = 50.0;
+
+    for (int i = 0; i < categoryCount; i++)
+    {
+        categories[i].totalSpent = 0.0;
+    }
+}
+
+char *Categories[] = {
+    "Groceries",
+    "Bills",
+    "Entertainment",
+    "Transportation",
+    "Others",
+    "Add new categorie",
+    NULL};
+
+void payOnline(Account *account)
+{
+    BankCard cardpayment = searchBankCardByaccountID(account->accountID);
+
+    char description[50];
+    float amount;
+    int categoryChoice;
+
+    printf("Enter the amount to pay : DH ");
+    scanf("%f", &amount);
+
+    if (amount > cardpayment.cardbalance)
+    {
+        printf(RED "Insufficient funds! Payment cannot be processed.\n" RESET);
+        return;
+    }
+
+    int choice = choose_item(Categories, "Select a category");
+
+    if (amount > categories[choice].budget - categories[choice].totalSpent)
+    {
+        printf(RED "You're out of the categorie %s's budget.\n" RESET, categories[choice]);
+        return;
+    }
+
+    printf("Enter a description for this payment: ");
+    scanf(" %[^\n]", description);
+
+    // Deduct from card balance and update category spending
+    cardpayment.cardbalance -= amount;
+    categories[choice].totalSpent += amount;
+
+    // Transaction transaction;             FIXME: // it gonna be the history struct and its functions
+    // // Record the transaction
+    // strcpy(transactions[transactionCount].description, description);
+    // strcpy(transactions[transactionCount].category, categories[selectedCategory].name);
+    // transactions[transactionCount].amount = amount;
+    // transactionCount++;
+
+    printf(GREEN "Payment of %.2fDH for '%s' categorized as '%s' has been processed successfully.\n" RESET, amount, description, categories[choice].name);
+
+    // Perform category-specific action
+    handleCategorySpecificAction(choice);
+}
+
+// Perform Category-Specific Actions
+void handleCategorySpecificAction(int choice)
+{
+    switch (choice)
+    {
+    case 0:
+        printf(CYAN "\n** Tip: Buying in bulk could save you money! **\n" RESET);
+        break;
+    case 1:
+        printf(CYAN "\n** Set up recurring payments for your convenience. **\n" RESET);
+        break;
+    case 2:
+        printf(CYAN "\n** Reminder: Stay within your entertainment budget for savings. **\n" RESET);
+        break;
+    case 3:
+        printf(CYAN "\n** Did you know? Tracking your mileage could help optimize fuel costs. **\n" RESET);
+        break;
+    case 4:
+        printf(CYAN "\n** Note: Record any special details about this payment for future reference. **\n" RESET);
+        break;
+    default:
+        break;
+    }
 }
 
 char *Choicess[] = {
-    " display informations ",
-    " recharge online ! ",
-    " payer votre facture ",
-    " afficher les chiffres de carte ",
-    " transaction ",
-    " historical of your activities ",
-    " return ",
-    " exit ",
+    "Display info",
+    "Online recharge",
+    "Fact pay",
+    "Card number",
+    "Transaction",
+    "History",
+    "Return",
+    "Exit",
     NULL};
 
-void FUNCTION(Account selectedAccount){
-    while(1) {
+void FUNCTION(Account selectedAccount)
+{
+    while (1)
+    {
         int choice = choose_item(Choicess, " ---- Make your choice ! ---- ");
-        switch (choice) {
-            case 0:
+        switch (choice)
+        {
+        case 0:
             displayBankCardInfo(selectedAccount);
             continue;
-            
-            case 1:
+
+        case 1:
             rechargeOnline(&selectedAccount);
             continue;
-            
-            case 2:
-            printf(" you have not established any relationship with any of your invoices . \n");
-            printf(" !!!!!! \n\n ");
+
+        case 2:
+            // printf(RED" you have not established any relationship with any of your invoices . \n"RESET);
+            // printf("");
+            // printf(" !!!!!! \n\n ");
+            payBills(&selectedAccount);
             break;
-            
-            case 3:
-            printf(" _________ Your number card is : _________ \n");
+
+        case 3:
+            printf("\033[1;34m _________ Your number card is : _________ \033[0m\n");
             BankCard bankCard = searchBankCardByaccountID(selectedAccount.accountID);
             printf(" \n");
-            formatString( bankCard.cardNumber );
+            formatString(bankCard.cardNumber);
             continue;
-            
-            case 4:
-            long long ID ;
-            Account *distAccount ;
-                while( 1 ) {
-                    printf(" give the ID o the account you want to send money to : ");
-                    scanf("%lld",&ID);
 
-                    distAccount = searchAccountByID(ID);
-                    if( distAccount == NULL ) {
-                        printf(" the account does not exist in databases !! \n try again !! \n\n\n");
-                    } else break ;
+        case 4:
+            long long ID;
+            Account *distAccount;
+            int i = 0 ;
+            while (1)
+            {
+                printf(" give the ID o the account you want to send money to : ");
+                scanf("%lld", &ID);
+
+                distAccount = searchAccountByID(ID);
+                if (distAccount == NULL)
+                {
+                   printf(" the account does not exist in databases !! \n try again !! \n\n\n");
                 }
-            
+                else break;
+                i++ ;
+                if( i == 3 ) break ;
+            }
+            if( i == 3 ) continue;
             printf("\n how much you want to sent ? : ");
-            float much ;
-            scanf("%f",&much);
-            if( selectedAccount.balance < much ){
+            float much;
+            scanf("%f", &much);
+            if (selectedAccount.balance < much)
+            {
                 printf(" you have not enough money in your account !! \n\n\n");
-            }else{
-                selectedAccount.balance = selectedAccount.balance - much ;
-                distAccount->balance = distAccount->balance + much ;
+            }
+            else
+            {
+                selectedAccount.balance = selectedAccount.balance - much;
+                distAccount->balance = distAccount->balance + much;
                 updateAccount(distAccount);
                 updateAccount(&selectedAccount);
                 hestoric data;
-                data.AccountID = selectedAccount.accountID ;
-                data.amount = -much ;
-                strcpy(data.detail," ---->> you send money !! :") ;
+                data.AccountID = selectedAccount.accountID;
+                data.amount = -much;
+                strcpy(data.detail, " ---->> you send money !! :");
                 getCurrentDate(data.dateop, sizeof(data.dateop));
                 savehesto(data);
 
-                data.AccountID = distAccount->accountID ;
-                data.amount = much ;
-                strcpy(data.detail,"---->> you recieve money !! :") ;
+                data.AccountID = distAccount->accountID;
+                data.amount = much;
+                strcpy(data.detail, "---->> you recieve money !! :");
                 getCurrentDate(data.dateop, sizeof(data.dateop));
                 savehesto(data);
             }
             continue;
-            
-            case 5: 
+
+        case 5:
             searchByAccountID(selectedAccount.accountID);
             printf("\n\n");
             continue;
-            
-            case 6:
-                logIn_Account(selectedAccount.ownerID);
-            
-            default:
-                exit(0);
+
+        case 6:
+            logIn_Account(selectedAccount.ownerID);
+
+        default:
+            exit(0);
             continue;
         }
     }
+}
+void payBills(Account *selectedAccount) {
+    // List of predefined bills
+    Facture factures[] = {
+        {19482, "Water", 50.00},
+        {29301, "Electricity", 100.00},
+        {38491, "Wifi", 60.00},
+        {47281, "Car Insurance", 200.00}
+    };
+    int numFactures = sizeof(factures) / sizeof(factures[0]);
+
+    // Display table header
+    printf("\n\033[1;36m========== Available Bills to Pay ==========\033[0m\n");
+    printf("\033[1;33m+---------+------------------+-------------+\033[0m\n");
+    printf("\033[1;33m|   ID    |       Name       |   Amount DH |\033[0m\n");
+    printf("\033[1;33m+---------+------------------+-------------+\033[0m\n");
+
+    // Display available bills in a clean table
+    for (int i = 0; i < numFactures; i++) {
+        printf("\033[1;32m| %7d | %-16s | %10.2f DH |\033[0m\n", 
+               factures[i].id, factures[i].name, factures[i].amount);
+    }
+    printf("\033[1;33m+---------+------------------+-------------+\033[0m\n");
+    printf("\033[1;35mEnter 0 to return to the previous page.\n\033[0m");
+
+    // Input: User selects a bill by ID
+    int enteredID;
+    printf("\n\033[1;35mEnter the ID of the bill you want to pay: \033[0m");
+    scanf("%d", &enteredID);
+
+    // Allow the user to return to the previous menu
+    if (enteredID == 0) {
+        printf("\033[1;33mReturning to the previous menu...\033[0m\n");
+        return;
+    }
+
+    // Search for the facture by ID
+    Facture *selectedFacture = NULL;
+    for (int i = 0; i < numFactures; i++) {
+        if (factures[i].id == enteredID) {
+            selectedFacture = &factures[i];
+            break;
+        }
+    }
+
+    // Handle invalid ID
+    if (selectedFacture == NULL) {
+        printf("\033[1;31mError: Invalid facture ID!\n\033[0m");
+        return;
+    }
+
+    // Check if the account has sufficient balance
+    if (selectedAccount->balance < selectedFacture->amount) {
+        printf("\033[1;31mInsufficient funds to pay for %s (%.2f DH)!\n\033[0m", 
+               selectedFacture->name, selectedFacture->amount);
+        return;
+    }
+
+    // Deduct amount and update balance
+    selectedAccount->balance -= selectedFacture->amount;
+    updateAccount(selectedAccount);
+
+    // Log the transaction into historical
+    hestoric data;
+    data.AccountID = selectedAccount->accountID;
+    data.amount = -selectedFacture->amount;
+    snprintf(data.detail, sizeof(data.detail), "Paid bill: %s", selectedFacture->name);
+    getCurrentDate(data.dateop, sizeof(data.dateop));
+    savehesto(data);
+
+    // Success message
+    printf("\n\033[1;32mSuccess: You have paid for %s (%.2f DH).\n\033[0m",
+           selectedFacture->name, selectedFacture->amount);
+    printf("\033[1;34mRemaining Balance: %.2f DH\n\033[0m", selectedAccount->balance);
 }

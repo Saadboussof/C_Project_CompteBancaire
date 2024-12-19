@@ -2,13 +2,21 @@
 
 void displayAccountDetails(Account account)
 {
+    setCursor(20, 102);
     printf(PURPLE "----------- Account Details -----------\n" RESET);
+    setCursor(21, 102);
     printf(CYAN "Account ID     : " RESET "%lld\n", account.accountID);
+    setCursor(22, 102);
     printf(CYAN "Owner ID       : " RESET "%lld\n", account.ownerID);
+    setCursor(23, 102);
     printf(CYAN "Balance        : " RESET "%.2f DH\n", account.balance);
+    setCursor(24, 102);
     printf(CYAN "Account Type   : " RESET "%s\n", account.accountType);
+    setCursor(25, 102);
     printf(CYAN "Account Status : " RESET "%s\n", account.isBlocked ? RED "Blocked" RESET : GREEN "Active" RESET);
+    setCursor(26, 102);
     printf(CYAN "Date Created   : " RESET "%s\n", account.dateCreated);
+    setCursor(27, 102);
     printf(PURPLE "---------------------------------------\n" RESET);
 }
 
@@ -44,7 +52,7 @@ void displayBankCardInfo(Account account)
 
 void displayAllAccounts()
 {
-    FILE *file = fopen("accounts.dat", "rb");
+    FILE *file = fopen("accounts.dat", "ab");
     if (file == NULL)
     {
         printf(RED "ERROR: Failed to open the accounts file.\n" RESET);

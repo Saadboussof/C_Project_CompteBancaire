@@ -24,12 +24,13 @@ void getCurrentDate(char *buffer, size_t bufferSize)
     strftime(buffer, bufferSize, "%Y-%m-%d at %H:%M:%S", t);
 }
 
+// Function to print the menu with advanced style
 int choose_item(char **items, char *title)
 {
     int selected_option = 0;
     int key;
 
-    // Count items in the list until NULL value that ~SHOULD~ be mentionned at the end of each list
+    // Count items in the list until NULL value
     int item_count = 0;
     while (items[item_count] != NULL)
     {
@@ -38,26 +39,48 @@ int choose_item(char **items, char *title)
 
     while (1)
     {
+        // Print title in bold and underlined yellow
+        setCursor(2, 103);
+        printf(BOLD UNDERLINE YELLOW "%s:\n" RESET, title);
 
-        printf(BOLD YELLOW "%s:\n" RESET, title);
-
-        // Display menu options with highlighting
+        // Display menu options with highlighting on new lines
         for (int i = 0; i < item_count; i++)
         {
             if (i == selected_option)
             {
-                printf(GREEN "> %s\n" RESET, items[i]);
+                // Highlight selected option with green, red for "Exit" or "Return"
+                if (strcmp(items[i], "Exit") == 0 || strcmp(items[i], "Return") == 0 || strcmp(items[i], "Log out") == 0)
+                {
+                    setCursor(i + 3, 103);
+                    printf(RED "  > %s " RESET, items[i]);  // Red for Exit/Return
+                }
+                else
+                {
+                    setCursor(i + 3, 103);
+                    printf(GREEN "  > %s " RESET, items[i]);  // Green for selected options
+                }
             }
             else
             {
-                printf(WHITE "  %s\n" RESET, items[i]);
+                // Non-selected options in white, red for Exit/Return
+                if (strcmp(items[i], "Exit") == 0 || strcmp(items[i], "Return") == 0 || strcmp(items[i], "Log out") == 0)
+                {
+                    setCursor(i + 3, 103);
+                    printf(RED "    %s " RESET, items[i]);  // Red for Exit/Return
+                }
+                else
+                {
+                    setCursor(i + 3, 103);
+                    printf(WHITE "    %s " RESET, items[i]);  // White for normal options
+                }
             }
+            printf("\n");  // Move to the next line after each option
         }
 
         // Get user input for navigation
         key = _getch();
         if (key == 224)
-        { // Arrow key prefix (but we still don't yet know which one (up/down))
+        { // Arrow key prefix
             key = _getch();
             if (key == 72 && selected_option > 0)
             { // Up arrow
@@ -70,8 +93,10 @@ int choose_item(char **items, char *title)
         }
         else if (key == 13)
         { // Enter key
+            system("cls");
             return selected_option;
         }
+        
         system("cls");
     }
 }
@@ -131,15 +156,15 @@ int validatePIN(const char *enteredPIN, const char *correctPIN)
     return strcmp(enteredPIN, correctPIN) == 0;
 }
 
-// Function to check if a string contains only alphabetic characters
-int isAlphaString(char *str)
-{
-    for (int i = 0; str[i] != '\0'; i++)
-    {
-        if (!isalpha(str[i])) // If any character is not alphabetic, return 0
-            return 0;
+// Function to check if a string contains only letters and spaces
+int isAlphaString(char *str) {
+    while (*str) {
+        if (!isalpha(*str) && *str != ' ') { // Allow only letters and spaces
+            return 0; // Invalid
+        }
+        str++;
     }
-    return 1; // All characters are alphabetic
+    return 1; // Valid
 }
 
 // Function to check if a string contains only numeric characters
@@ -258,6 +283,11 @@ void typingEffect(const char *text, int speed) {
         usleep(speed * 1000);
     }
     printf("\n");
+}
+
+// Function to set the cursor position
+void setCursor(int row, int col) {
+    printf("\033[%d;%dH", row, col);
 }
 
 

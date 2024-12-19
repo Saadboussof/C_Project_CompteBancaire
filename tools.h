@@ -9,20 +9,23 @@
 #include <stdbool.h>
 #include "client.h"
 #include "account.h"
+#include <conio.h>
+#include <windows.h>
 
 // Define ANSI color codes for highlighting and style
 #define CYAN "\033[0;36m"
 #define BLUE "\033[34m"
-#define PURPLE "\033[35m"
+#define PURPLE "\033[1;35m"
+// #define PURPLE "\033[35m"
 #define RED "\033[31m"
-#define MAGENTA "\033[35m"
+#define MAGENTA "\033[1;35m"
 #define ORANGE "\033[38;5;214m"
 #define YELLOW "\033[33m"
 #define GREEN "\033[32m"
 #define RESET "\033[0m"
 #define WHITE "\033[37m"
 #define BOLD "\033[1m"
-
+#define UNDERLINE "\x1b[4m"
 
 void main();
 long long generateRandomAccountNumber();
@@ -38,4 +41,6 @@ void fordelay(int j);
 void displaySpectacularLoadingBar(int duration);
 void gradientSpinner(int duration);
 void typingEffect(const char *text, int speed);
+void setCursor(int row, int col);
+
 #endif // TOOLS_H

@@ -4,18 +4,19 @@
 
 void logIn_Account(long long ownerID)
 {
-    hestoric data ;
+    hestoric data;
     int resultCount = 0;
 
     Account *accounts = searchAccountsByClientID(ownerID, &resultCount);
 
-    if (resultCount == 0) {
+    if (resultCount == 0)
+    {
         printf(BLUE "No accounts found. Creating a new account...\n" RESET);
         creatingAccountRequest(ownerID);
         return;
     }
 
-    char **accountOptions = malloc((resultCount + 3) * sizeof(char *));
+    char **accountOptions = malloc((resultCount + 4) * sizeof(char *));
     if (!accountOptions)
     {
         printf(RED "ERROR : Failed to allocate memory.\n" RESET);
@@ -32,7 +33,8 @@ void logIn_Account(long long ownerID)
     }
     accountOptions[resultCount] = ORANGE "Create new account" RESET;
     accountOptions[resultCount + 1] = CYAN "Update your client profile" RESET;
-    accountOptions[resultCount + 2] = NULL;
+    accountOptions[resultCount + 2] = "Log out";
+    accountOptions[resultCount + 3] = NULL;
 
     int accountSelected = 0;
 
@@ -44,12 +46,16 @@ void logIn_Account(long long ownerID)
         {
             creatingAccountRequest(ownerID);
             return;
-        }
-        else if (index_account == resultCount + 1)
+        } else if (index_account == resultCount + 1)
         {
             Client *currentaccount = findClient("0", ownerID, 0);
             printf(BLUE "Client profile updating...\n" RESET);
             updateClient(currentaccount->CIN);
+            return;
+        } else if (index_account == resultCount + 2)
+        {
+            printf(RED "Loging out...\n" RESET);
+            logIn_Client;
             return;
         }
 
@@ -63,13 +69,28 @@ void logIn_Account(long long ownerID)
             continue; // Skip the rest of the loop and ask the user to choose another account
         }
 
-        if (authenticate_account( &selectedAccount ))
+        if (authenticate_account(&selectedAccount))
         {
             // gradientSpinner(50); // 50 ms per frame
 
             displayAccountDetails(selectedAccount);
-            FUNCTION(selectedAccount);
+            /*
+            accountFunctionalities(Account selectedAccount){
+                1. transaction
+                2. history :
+                    *transactions (send/receive)
+                    *deposits
+                    *card purchases
+                3. Recharge
+                4. online payment
+                5. Display card info
+                6. Display Account RIB
 
+
+            }
+            */
+            FUNCTION(selectedAccount);
+            return;
         }
 
         for (int i = 0; i < resultCount; i++)
@@ -79,23 +100,28 @@ void logIn_Account(long long ownerID)
         free(accountOptions);
     }
 }
-void formatString(char *input) {
+void formatString(char *input)
+{
     int len = strlen(input);
-     printf("==> ");
-    for (int i = 0; i < len; i++) {
+    // Affichage
+    printf("\n%s==> %s", CYAN, GREEN );
+    for (int i = 0; i < len; i++)
+    {
         printf("%c", input[i]);
 
-        // Insert a space after every 4 characters
-        if ((i + 1) % 4 == 0 && i != len - 1) {
+        if ((i + 1) % 4 == 0 && i != len - 1)
+        {
             printf(" ");
         }
     }
-    printf(" <==\n\n\n");
+    printf(CYAN"%s <==\n\n\n", RESET);
 }
 
-void savehesto(hestoric data) {
+void savehesto(hestoric data)
+{
     FILE *file = fopen("hestorical.bin", "ab+"); // "ab" = append in binary mode
-    if (file == NULL) {
+    if (file == NULL)
+    {
         perror("Error opening file");
     }
 
@@ -106,6 +132,7 @@ void savehesto(hestoric data) {
     fclose(file);
     // printf("Data saved successfully.\n");
 }
+
 int authenticate_account(Account *selectedAccount)
 {
     char PIN[5];
@@ -137,8 +164,7 @@ int authenticate_account(Account *selectedAccount)
 void handleAccountBlocking(Account *account)
 {
     account->isBlocked = ~account->isBlocked; // Mark the account as blocked
-    deleteAccountFromFile(account->accountID);
-    saveAccountToFile(account);
+    updateAccount(account);
 }
 
 char *ACCOUNT_TYPES[] = {
@@ -180,9 +206,9 @@ void creatingAccountRequest(long long ownerID)
     // Save the request of account creation in the request file:
     saveAccountToFile(&newAccount);
 
-    typingEffect(YELLOW "Request Creation...\n" RESET, 50);
-    typingEffect(BLUE "Request Processing...\n" RESET, 50);
-    typingEffect(GREEN "Request Submission...\n" RESET, 50);
+    typingEffect(YELLOW "Request Creation..." RESET, 50);
+    typingEffect(BLUE "Request Processing..." RESET, 50);
+    typingEffect(GREEN "Request Submission..." RESET, 50);
     printf(BOLD "Done!\n" RESET);
 
     printf(GREEN "Your account creation request has been submitted successfully!\n" RESET);
@@ -218,7 +244,7 @@ void requestBankCard(Account account)
         // Calculate expiry date ("expdate" years from the current date)
         char currentDate[23];
         getCurrentDate(currentDate, sizeof(currentDate));
-        
+
         // Extract the year from current date and add "expdate" years to it
         int currentYear = atoi(currentDate);
 
@@ -255,14 +281,14 @@ void requestBankCard(Account account)
         snprintf(bankcard.cardNumber, sizeof(bankcard.cardNumber), "%d%lld%lld%02d", a, account.accountID, account.ownerID, rand() % 100);
 
         // The balance of a new Bank card is 0.00.
-        bankcard.cardbalance = 0.00;        
+        bankcard.cardbalance = 0.00;
 
         // Set card as not blocked (default is unblocked)
         bankcard.cardBlocked = 0;
 
         // Prompt for a PIN for the card
         setAndConfirmPIN(bankcard.PIN);
-     
+
         bankcard.cardaccountID = account.accountID;
 
         // Inform the client that the card request is successful

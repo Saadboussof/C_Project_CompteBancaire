@@ -19,8 +19,17 @@ void logIn_Employee()
     // CIN validation loop
     while (cinAttempts > 0)
     {
+        while (1)
+    {
         printf("Enter your CIN: ");
         scanf(" %s", CIN_EM);
+
+        // Validate CIN
+        if (isValidCIN(CIN_EM))
+            break;
+        else
+            printf(RED "Invalid CIN. Please try again.\n" RESET);
+    }
         // printf("\n%s\n",CIN_EM);
 
         // Attempt to find the employee by CIN
@@ -85,12 +94,20 @@ Employee createEmployee()
 {
     Employee newEmployee;
     int isValid = 0;
+    int check = false;
 
     printf(BLUE "Creating a new employee...\n" RESET);
 
     // Get full name
-    printf("Enter Employee Full Name: ");
-    scanf(" %[^\n]", newEmployee.fullName);
+    while (!check)
+    {
+        printf("Enter employee Full Name: ");
+        scanf(" %[^\n]", newEmployee.fullName);
+        check = isAlphaString(newEmployee.fullName);
+        if (!check)
+            printf(RED "Invalide name please try again.\n" RESET);
+    }
+    check = false;
 
     // // Get CIN
     // while (!isValid)
@@ -114,15 +131,15 @@ Employee createEmployee()
     printf("Generated Employee ID: %lld\n", newEmployee.employeeID);
 
     // Get phone number
-    while (!isValid)
+    while (!check)
     {
-        printf("Enter Employee Phone Number (10 digits): ");
+        printf("Enter Client Phone Number: ");
         scanf(" %[^\n]", newEmployee.E_phone_number);
-        isValid = isNumericString(newEmployee.E_phone_number); // Validate phone number
-        if (!isValid)
-            printf(RED "Invalid phone number. Please enter a valid 10-digit phone number.\n" RESET);
+        check = (isNumericString(newEmployee.E_phone_number) && (strlen(newEmployee.E_phone_number) == 10) && (newEmployee.E_phone_number[0] == '0'));
+        if (!check)
+            printf(RED "Invalide Phone Number please try again.\n" RESET);
     }
-    isValid = 0;
+    check = false;
 
     // Get address
     printf("Enter Employee Address: ");
@@ -190,8 +207,17 @@ void signUpRequest_Employee(Employee *loggedInEmployee)
 
     // if (strcmp(CIN_EM, "\0") == 0)
     // {
-    printf("Enter the CIN for the new employee: ");
-    scanf(" %s", CIN_EM);
+    while (1)
+    {
+        printf("Enter your CIN of the new employee: ");
+        scanf(" %s", CIN_EM);
+
+        // Validate CIN
+        if (isValidCIN(CIN_EM))
+            break;
+        else
+            printf(RED "Invalid CIN. Please try again.\n" RESET);
+    }
     // }
 
     // Check if the employee already exists
@@ -224,7 +250,7 @@ void Employee_Interface(Employee *loggedInEmployee)
         "Display All Clients",
         "Display All Employees",
         "Create Employee",
-        "Log Out",   // Return to the previous menu or logout
+        "Log out",   // Return to the previous menu or logout
         NULL};
 
     int choice;
