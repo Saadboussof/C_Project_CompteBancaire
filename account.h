@@ -74,4 +74,7 @@ int choose_item_with_return(char *items[], const char *message);
 void printHeader(const char *title);
 void logPaidBill(long long accountID, int billID);
 int isBillPaid(long long accountID, int billID);
+void transferBalanceToCard(Account *account, BankCard *bankCard);
+
+
 #endif // ACCOUNT_H
