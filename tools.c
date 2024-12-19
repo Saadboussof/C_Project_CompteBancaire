@@ -40,6 +40,7 @@ int choose_item(char **items, char *title)
     while (1)
     {
         // Print title in bold and underlined yellow
+        setCursor(2, 103);
         printf(BOLD UNDERLINE YELLOW "%s:\n" RESET, title);
 
         // Display menu options with highlighting on new lines
@@ -48,24 +49,28 @@ int choose_item(char **items, char *title)
             if (i == selected_option)
             {
                 // Highlight selected option with green, red for "Exit" or "Return"
-                if (strcmp(items[i], "Exit") == 0 || strcmp(items[i], "Return") == 0)
+                if (strcmp(items[i], "Exit") == 0 || strcmp(items[i], "Return") == 0 || strcmp(items[i], "Log out") == 0)
                 {
+                    setCursor(i + 3, 103);
                     printf(RED "  > %s " RESET, items[i]);  // Red for Exit/Return
                 }
                 else
                 {
+                    setCursor(i + 3, 103);
                     printf(GREEN "  > %s " RESET, items[i]);  // Green for selected options
                 }
             }
             else
             {
                 // Non-selected options in white, red for Exit/Return
-                if (strcmp(items[i], "Exit") == 0 || strcmp(items[i], "Return") == 0)
+                if (strcmp(items[i], "Exit") == 0 || strcmp(items[i], "Return") == 0 || strcmp(items[i], "Log out") == 0)
                 {
+                    setCursor(i + 3, 103);
                     printf(RED "    %s " RESET, items[i]);  // Red for Exit/Return
                 }
                 else
                 {
+                    setCursor(i + 3, 103);
                     printf(WHITE "    %s " RESET, items[i]);  // White for normal options
                 }
             }
@@ -88,6 +93,7 @@ int choose_item(char **items, char *title)
         }
         else if (key == 13)
         { // Enter key
+            system("cls");
             return selected_option;
         }
         
@@ -277,6 +283,11 @@ void typingEffect(const char *text, int speed) {
         usleep(speed * 1000);
     }
     printf("\n");
+}
+
+// Function to set the cursor position
+void setCursor(int row, int col) {
+    printf("\033[%d;%dH", row, col);
 }
 
 

@@ -250,7 +250,7 @@ void Employee_Interface(Employee *loggedInEmployee)
         "Display All Clients",
         "Display All Employees",
         "Create Employee",
-        "Log Out",   // Return to the previous menu or logout
+        "Log out",   // Return to the previous menu or logout
         NULL};
 
     int choice;

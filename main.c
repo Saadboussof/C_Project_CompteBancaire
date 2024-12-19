@@ -13,8 +13,8 @@ void welcom()
 void main()
 {
     srand(time(NULL)); // Seed the random number generator
+    system("cls");
     // welcom();
-
     char *Choices[] = {
         "Client Portal",
         "Employee Dashboard",
@@ -23,17 +23,20 @@ void main()
 
     int choice = choose_item(Choices, "Make your choice");
 
-    switch (choice)
-    {
-    case 0:
-        Client_Portal();
-        break;
-    case 1:
-        Employee_Portal();
-        break;
-    default:
-        printf(RED "Exiting program.\n" RESET);
-        exit(0);
-        break;
+    while(1) {
+        switch (choice)
+        {
+        case 0:
+            Client_Portal();
+            break;
+        case 1:
+            Employee_Portal();
+            break;
+        default:
+            printf(RED "Exiting program.\n" RESET);
+            exit(0);
+            break;
+        }
     }
+    
 }

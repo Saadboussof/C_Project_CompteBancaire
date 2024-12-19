@@ -157,7 +157,7 @@ int checkClientApprovalStatus(Client *client)
         printf("\n");
         if (choice == '1')
             updateClient(client->CIN);
-        exit(0);
+        return 0;
     }
     return 1;
 }

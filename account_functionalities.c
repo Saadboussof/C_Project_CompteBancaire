@@ -229,14 +229,14 @@ void handleCategorySpecificAction(int choice)
 }
 
 char *Choicess[] = {
-    " display informations ",
-    " recharge online ! ",
-    " payer votre facture ",
-    " afficher les chiffres de carte ",
-    " transaction ",
-    " historical of your activities ",
-    " return ",
-    " exit ",
+    "Display info",
+    "Online recharge",
+    "Fact pay",
+    "Card number",
+    "Transaction",
+    "History",
+    "Return",
+    "Exit",
     NULL};
 
 void FUNCTION(Account selectedAccount)
