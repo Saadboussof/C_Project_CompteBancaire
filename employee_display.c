@@ -35,41 +35,51 @@ void displayAllEmployees(Employee *loggedInEmployee)
 
     Employee employee;
     int count = 0;
-
+    setCursor(21, 4);
     // Header
-    printf(PURPLE 
-    "\n+----------------------------------------- All Employees -----------------------------------------+\n" RESET);
-
-    printf(PURPLE "|" RESET ORANGE " %-3s " RESET PURPLE "|" RESET ORANGE " %-10s " RESET PURPLE "|" RESET ORANGE " %-8s " RESET PURPLE "|" RESET ORANGE " %-20s " RESET PURPLE "|" RESET ORANGE " %-11s " RESET PURPLE "|" RESET ORANGE " %-10s " RESET PURPLE "|" RESET ORANGE " %-10s " RESET PURPLE "|" RESET "\n", 
+    printf(PURPLE "+--------------------------------------------- All Employees ------------------------------------------------------+\n" RESET);
+    setCursor(22, 4);
+    printf(PURPLE "|" RESET ORANGE " %-3s " RESET PURPLE "|" RESET ORANGE " %-10s " RESET PURPLE "|" RESET ORANGE " %-8s " RESET PURPLE "|" RESET ORANGE " %-30s " RESET PURPLE "|" RESET ORANGE " %-13s " RESET PURPLE "|" RESET ORANGE " %-20s " RESET PURPLE "|" RESET ORANGE " %-9s " RESET PURPLE "|" RESET "\n", 
            "No", "Employee ID", "CIN", "Name", "Phone Number", "Address", "Role");
-
-    printf(PURPLE "+-----------------------------------------------------------------------------------------------+\n" RESET);
+    setCursor(23, 4);
+    printf(PURPLE "+------------------------------------------------------------------------------------------------------------------+\n" RESET);
 
     // Reading employees from file and displaying them
     while (fread(&employee, sizeof(Employee), 1, file) == 1)
     {
         count++;
-        printf("" PURPLE "|" RESET CYAN " %-3d " RESET PURPLE "|" RESET " %-10lld " PURPLE "|" RESET " %-8s " PURPLE "|" RESET " %-20s " PURPLE "|" RESET " %-11s " PURPLE "|" RESET " %-10s " PURPLE "|" RESET " %-10s " PURPLE "|" RESET "\n",
+        setCursor(23 + count, 4);        
+        printf("" PURPLE "|" RESET CYAN " %-3d " RESET PURPLE "|" RESET " %-11lld " PURPLE "|" RESET " %-8s " PURPLE "|" RESET " %-30s " PURPLE "|" RESET BOLD " %-13s " RESET PURPLE "|" RESET " %-20s " PURPLE "|" RESET " %-9s " PURPLE "|" RESET "\n",
                 count,
                 employee.employeeID,
                 employee.CIN_EM,
                 employee.fullName,
                 employee.E_phone_number,
                 employee.E_adresse,
-                employee.isAdmin ? RED "   Admin   " RESET : GREEN " Regular " RESET);
+                employee.isAdmin ? GREEN BOLD "  Admin  " RESET :  " Regular " );
     }
 
     fclose(file);
 
     // Check if no employees were found
-    if (count == 0)
+    if (count == 0) // file opened but no clients found
     {
-        printf(ORANGE "No employees found in the database.\nIf you think there might be an issue, please report it to the technical team.\n" RESET);
+        setCursor(24, 4);
+        printf(PURPLE "|                                                                                                                          |\n" RESET);
+        printf(PURPLE "|" RESET ORANGE "                                        No employees found in the database                                                  " RESET PURPLE "|\n" RESET);
+        printf(PURPLE "|                                                                                                                          |\n" RESET);
+        printf(PURPLE "+------------------------------------------------------------------------------------------------------------------+\n" RESET);
     }
+    // if (count == 0)
+    // {
+    //     setCursor(24, 4);
+    //     printf(ORANGE "No employees found in the database.\nIf you think there might be an issue, please report it to the technical team.\n" RESET);
+    // }
     else
     {
-        printf(PURPLE "+-----------------------------------------------------------------------------------------------+\n" RESET);
-        printf(GREEN "\nDisplayed %d employee(s) successfully.\n" RESET, count);
+        setCursor(24 + count, 4);
+        printf(PURPLE "+------------------------------------------------------------------------------------------------------------------+\n" RESET);
+        printf(GREEN "\nDisplayed" RESET BOLD " %d " RESET GREEN "employee(s) successfully.\n" RESET, count);
     }
 }
 

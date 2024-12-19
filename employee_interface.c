@@ -7,10 +7,37 @@ Employee *loggedInEmployee; // Global pointer for logged-in employee
 
 char CIN_EM[9] = {'\0'};
 
+void Employee_Portal()
+{
+    char *Choices[] = {
+        "Log in",
+        "Return",   // Return to the main menu
+        "Exit",     // Exit the application
+        NULL};
+
+    int choice = choose_item(Choices, "Employee Portal: Make your choice");
+
+    switch (choice)
+    {
+    case 0: // Log in
+        logIn_Employee();
+        break;
+    // case 1: // Sign up
+    //     signUpRequest_Employee(); // Sign-up logic for employees
+    //     break;
+    case 1: // Return
+        main();
+        break;
+    default: // Exit
+        exit(0);
+        break;
+    }
+}
+
 void logIn_Employee()
 {
     char CIN_EM[9];
-    char password[20];
+    char password[5];
     int cinAttempts = 3;  // Maximum attempts allowed for CIN
     int passwordAttempts = 3; // Maximum attempts allowed for password
 
@@ -88,106 +115,6 @@ void logIn_Employee()
     }
 }
 
-
-
-Employee createEmployee()
-{
-    Employee newEmployee;
-    int isValid = 0;
-    int check = false;
-
-    printf(BLUE "Creating a new employee...\n" RESET);
-
-    // Get full name
-    while (!check)
-    {
-        printf("Enter employee Full Name: ");
-        scanf(" %[^\n]", newEmployee.fullName);
-        check = isAlphaString(newEmployee.fullName);
-        if (!check)
-            printf(RED "Invalide name please try again.\n" RESET);
-    }
-    check = false;
-
-    // // Get CIN
-    // while (!isValid)
-    // {
-    //     printf("Enter Employee CIN: ");
-    //     scanf(" %[^\n]", newEmployee.CIN_EM);
-    //     isValid = isValidCIN(newEmployee.CIN_EM); // Reuse client CIN validation logic
-    //     if (!isValid)
-    //         printf(RED "Invalid CIN. Please try again.\n" RESET);
-    // }
-    // isValid = 0;
-
-    strcpy(newEmployee.CIN_EM, CIN_EM);
-    // printf("Employee CIN: %s",newEmployee.CIN_EM);
-    // Get password
-    // printf("Enter Employee Password: ");
-    setAndConfirmPIN(newEmployee.password);
-
-    // Assign employee ID
-    newEmployee.employeeID = generateRandomAccountNumber();
-    printf("Generated Employee ID: %lld\n", newEmployee.employeeID);
-
-    // Get phone number
-    while (!check)
-    {
-        printf("Enter Client Phone Number: ");
-        scanf(" %[^\n]", newEmployee.E_phone_number);
-        check = (isNumericString(newEmployee.E_phone_number) && (strlen(newEmployee.E_phone_number) == 10) && (newEmployee.E_phone_number[0] == '0'));
-        if (!check)
-            printf(RED "Invalide Phone Number please try again.\n" RESET);
-    }
-    check = false;
-
-    // Get address
-    printf("Enter Employee Address: ");
-    scanf(" %[^\n]", newEmployee.E_adresse);
-
-    // Admin privileges
-    printf("Is this employee an admin? (1-Yes, 0-No): ");
-    while (scanf("%d", &newEmployee.isAdmin) != 1 || (newEmployee.isAdmin != 0 && newEmployee.isAdmin != 1))
-    {
-        printf(RED "Invalid input. Please enter 1 for Yes or 0 for No: " RESET);
-        while (getchar() != '\n'); // Clear invalid input
-    }
-
-    return newEmployee;
-}
-
-
-
-void Employee_Portal()
-{
-    char *Choices[] = {
-        "Log in",
-        "Return",   // Return to the main menu
-        "Exit",     // Exit the application
-        NULL};
-
-    int choice = choose_item(Choices, "Employee Portal: Make your choice");
-
-    switch (choice)
-    {
-    case 0: // Log in
-        logIn_Employee();
-        break;
-    // case 1: // Sign up
-    //     signUpRequest_Employee(); // Sign-up logic for employees
-    //     break;
-    case 1: // Return
-        main();
-        break;
-    default: // Exit
-        exit(0);
-        break;
-    }
-}
-
-
-
-
 void signUpRequest_Employee(Employee *loggedInEmployee)
 {
     // Ensure a logged-in employee exists
@@ -201,7 +128,7 @@ void signUpRequest_Employee(Employee *loggedInEmployee)
     if (!loggedInEmployee->isAdmin)
     {
         printf(RED "Access Denied: Only admin employees can create new employees.\n" RESET);
-        printf("why");
+        // printf("why");
         return;
     }
 
@@ -240,59 +167,216 @@ void signUpRequest_Employee(Employee *loggedInEmployee)
 }
 
 
+Employee createEmployee()
+{
+    Employee newEmployee;
+    int isValid = 0;
+    int check = false;
+
+    printf(BLUE "Creating a new employee...\n" RESET);
+
+    // Get full name
+    while (!check)
+    {
+        printf("Enter employee Full Name: ");
+        scanf(" %[^\n]", newEmployee.fullName);
+        check = isAlphaString(newEmployee.fullName);
+        if (!check)
+            printf(RED "Invalide name please try again.\n" RESET);
+    }
+    check = false;
+
+    
+
+    strcpy(newEmployee.CIN_EM, CIN_EM);
+    // Get password
+    setAndConfirmPIN(newEmployee.password);
+
+    // Assign employee ID
+    newEmployee.employeeID = generateRandomAccountNumber();
+    printf("Generated Employee ID: %lld\n", newEmployee.employeeID);
+
+    // Get phone number
+    while (!check)
+    {
+        printf("Enter Client Phone Number: ");
+        scanf(" %[^\n]", newEmployee.E_phone_number);
+        check = (isNumericString(newEmployee.E_phone_number) && (strlen(newEmployee.E_phone_number) == 10) && (newEmployee.E_phone_number[0] == '0'));
+        if (!check)
+            printf(RED "Invalide Phone Number please try again.\n" RESET);
+    }
+    check = false;
+
+    // Get address
+    printf("Enter Employee Address: ");
+    scanf(" %[^\n]", newEmployee.E_adresse);
+
+    // Admin privileges
+    printf("Is this employee an admin? (1-Yes, 0-No): ");
+    while (scanf("%d", &newEmployee.isAdmin) != 1 || (newEmployee.isAdmin != 0 && newEmployee.isAdmin != 1))
+    {
+        printf(RED "Invalid input. Please enter 1 for Yes or 0 for No: " RESET);
+        while (getchar() != '\n'); // Clear invalid input
+    }
+
+    return newEmployee;
+}
 
 
 void Employee_Interface(Employee *loggedInEmployee)
 {
+    if (loggedInEmployee == NULL)
+    {
+        printf(RED "ERROR: Access Denied.\n" RESET);
+        printf(YELLOW "You must be logged in to access this interface.\n" RESET);
+        return;
+    }
+
+    // Menu choices for employee functionalities
     char *Choices[] = {
-        "Update Employee Details",
-        "Approve/Reject Client Accounts",
-        "Display All Clients",
-        "Display All Employees",
-        "Create Employee",
-        "Log out",   // Return to the previous menu or logout
+        "Clients Functionalities",
+        "Employee functionalities",
+        BLUE "Update Employee Details" RESET,
+        "Log out", // Return to the main menu
         NULL};
 
     int choice;
 
     do
     {
-        choice = choose_item(Choices, "Employee Interface: Choose an action");
+        choice = choose_item(Choices, "Employee Interface");
+
+        switch (choice)
+        {
+        case 0: // Update Employee Details
+            Regular_Employee_Interface(loggedInEmployee);
+            break;
+
+        case 1: // Display All Clients
+            Admin_Interface(loggedInEmployee);
+            break;
+
+        case 2: // Display All Employees
+            updateEmployeeDetails(loggedInEmployee);
+            break;
+
+        case 3: // Log Out
+            // printf("\nLogging out...\n");
+            // No memory freeing if loggedInEmployee is managed globally
+            // main(); // Return to main menu
+            return;
+        case 4: // Display All Employees
+            // updateEmployeeDetails(loggedInEmployee);
+            printf("\nExit Programe...\n");
+            exit(0);
+        default: // Invalid option
+            printf(RED "Invalid option. Please try again.\n" RESET);
+        }
+
+    } while (1); // Keep the interface running until logout
+}
+
+
+
+
+void Admin_Interface(Employee *loggedInEmployee)
+{
+    if (loggedInEmployee == NULL)
+    {
+        printf(RED "ERROR: Access Denied.\n" RESET);
+        printf(YELLOW "You must be logged in to access this interface.\n" RESET);
+        return;
+    }
+    // Restrict access to admin employees only
+    if (!loggedInEmployee->isAdmin)
+    {
+        printf(RED "Access Denied: Only admin employees can open this window.\n" RESET);
+        // printf("why");
+        return;
+    }
+
+    // Menu choices for employee functionalities
+    char *Choices[] = {
+        "Display All Employees",
+        "Create Employee",
+        "Delete Employee",
+        "Return",
+        "Exit", // Return to the main menu
+        NULL};
+
+    int choice;
+
+    do
+    {
+        choice = choose_item(Choices, "Admin Interface");
+
+        switch (choice)
+        {
+        case 0: // Update Employee Details
+            displayAllEmployees(loggedInEmployee);
+            break;
+
+        case 1: // Display All Clients
+            signUpRequest_Employee(loggedInEmployee);
+            break;
+
+        case 2: // Display All Employees
+            deleteEmployee(loggedInEmployee);
+            break;
+
+        case 3: // Display All Employees
+            // deleteEmployee(loggedInEmployee);
+            return;
+
+        case 4: // Log Out
+            printf("\nExit Programe...\n");
+            // No memory freeing if loggedInEmployee is managed globally
+            // main(); // Return to main menu
+            exit(0);
+
+        default: // Invalid option
+            printf(RED "Invalid option. Please try again.\n" RESET);
+        }
+
+    } while (1); // Keep the interface running until logout
+}
+
+
+void Regular_Employee_Interface(Employee *loggedInEmployee)
+{
+    char *Choices[] = {
+        "Approve/Reject Clients",
+        "Display All Clients",
+        "Return",
+        "Exit",   // Return to the previous menu or logout
+        NULL};
+
+    int choice;
+
+    do
+    {
+        choice = choose_item(Choices, "Regular Employee Interface: ");
 
         switch (choice)
         {
         case 0: // View Client Requests
             // printf("1");
-            updateEmployeeDetails(loggedInEmployee);
+            processClientRequest();
             break;
 
         case 1: // Approve/Reject Client Accounts
             // printf("2");
-            processClientRequest();
-            break;
-
-        case 2: // Manage Clients
-            // printf("3");
-            // manageClients();
             displayAllClients();
             break;
-        case 3: // Manage Clients
-            // printf("3");
-            // manageClients();
-            displayAllEmployees(loggedInEmployee);
-            break;    
 
-        case 4: // Change Password
-            // printf("4");
-            // changeEmployeePassword(loggedInEmployee);
-            signUpRequest_Employee(loggedInEmployee);
-            break;
+        case 2: // return          
+            return;    
 
-        case 5: // Log Out
-            printf("\nLogging out...\n");
+        case 3: // Exit
+            printf("\nExit Program...\n");
             free(loggedInEmployee); // Free memory
             loggedInEmployee = NULL; // Reset the global pointer
-            main();
+            exit(0);
 
         default: // Invalid option
             printf(RED "Invalid option. Please try again.\n" RESET);
@@ -300,3 +384,13 @@ void Employee_Interface(Employee *loggedInEmployee)
 
     } while (1);
 }
+
+
+
+
+
+
+
+
+
+

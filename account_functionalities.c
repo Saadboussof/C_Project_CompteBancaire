@@ -109,6 +109,7 @@
 //     printf(CYAN "Remaining balance: " RESET "%.2f\n", account->balance);
 //     return 1; // Recharge successful
 // }
+
 void printHeader(const char *title)
 {
     printf("\n" CYAN "=================================================\n" RESET);
@@ -259,7 +260,7 @@ void FUNCTION(Account selectedAccount)
 {
     while (1)
     {
-        int choice = choose_item(Choicess, " ---- Make your choice ! ---- ");
+        int choice = choose_item(Choicess, "Account functionalities");
         switch (choice)
         {
         case 0:
@@ -271,9 +272,6 @@ void FUNCTION(Account selectedAccount)
             continue;
 
         case 2:
-            // printf(RED" you have not established any relationship with any of your invoices . \n"RESET);
-            // printf("");
-            // printf(" !!!!!! \n\n ");
             payBills(&selectedAccount);
             break;
 
@@ -290,25 +288,25 @@ void FUNCTION(Account selectedAccount)
             int i = 0 ;
             while (1)
             {
-                printf(" give the ID o the account you want to send money to : ");
+                printf("Give the ID o the account you want to send money to : ");
                 scanf("%lld", &ID);
 
                 distAccount = searchAccountByID(ID);
                 if (distAccount == NULL)
                 {
-                   printf(" the account does not exist in databases !! \n try again !! \n\n\n");
+                   printf(RED "The account does not exist in databases !! \n try again !! \n\n\n" RESET);
                 }
                 else break;
                 i++ ;
                 if( i == 3 ) break ;
             }
             if( i == 3 ) continue;
-            printf("\n how much you want to sent ? : ");
+            printf("\nHow much do you want to sent ? : ");
             float much;
             scanf("%f", &much);
             if (selectedAccount.balance < much)
             {
-                printf(" you have not enough money in your account !! \n\n\n");
+                printf("You don't have enough money in your account !! \n\n\n");
             }
             else
             {
@@ -319,13 +317,13 @@ void FUNCTION(Account selectedAccount)
                 hestoric data;
                 data.AccountID = selectedAccount.accountID;
                 data.amount = -much;
-                strcpy(data.detail, " ->> you send money !! :");
+                strcpy(data.detail, "You send money");
                 getCurrentDate(data.dateop, sizeof(data.dateop));
                 savehesto(data);
 
                 data.AccountID = distAccount->accountID;
                 data.amount = much;
-                strcpy(data.detail, "->> you recieve money !! :");
+                strcpy(data.detail, "You recieve money");
                 getCurrentDate(data.dateop, sizeof(data.dateop));
                 savehesto(data);
             }

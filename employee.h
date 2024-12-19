@@ -6,12 +6,12 @@
 // Define the Employee structure
 typedef struct
 {
-    char fullName[100];
+    char fullName[30];
     char CIN_EM[9];
     char password[20];
     long long employeeID;
     char E_phone_number[11];
-    char E_adresse[50];
+    char E_adresse[20];
     int isAdmin; // 1 for admin, 0 for regular employee
 } Employee;
 
@@ -30,6 +30,11 @@ void displayAllClients();
 void displayEmployeeDetails(Employee *employee);
 void processClientRequest();
 void displayAllEmployees(Employee *loggedInEmployee);
+void deleteEmployee(Employee *loggedInEmployee);
+void Admin_Interface(Employee *loggedInEmployee);
+void Regular_Employee_Interface(Employee *loggedInEmployee);
+
+
 
 
 #endif

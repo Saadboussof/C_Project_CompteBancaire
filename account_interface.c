@@ -40,7 +40,7 @@ void logIn_Account(long long ownerID)
 
     while (accountSelected == 0)
     {
-        int index_account = choose_item(accountOptions, "Your Accounts ");
+        int index_account = choose_item(accountOptions, "** Your Accounts **");
 
         if (index_account == resultCount)
         {
@@ -55,7 +55,7 @@ void logIn_Account(long long ownerID)
         } else if (index_account == resultCount + 2)
         {
             printf(RED "Loging out...\n" RESET);
-            logIn_Client;
+            Client_Portal();
             return;
         }
 
@@ -74,21 +74,6 @@ void logIn_Account(long long ownerID)
             // gradientSpinner(50); // 50 ms per frame
 
             displayAccountDetails(selectedAccount);
-            /*
-            accountFunctionalities(Account selectedAccount){
-                1. transaction
-                2. history :
-                    *transactions (send/receive)
-                    *deposits
-                    *card purchases
-                3. Recharge
-                4. online payment
-                5. Display card info
-                6. Display Account RIB
-
-
-            }
-            */
             FUNCTION(selectedAccount);
             return;
         }
@@ -99,38 +84,6 @@ void logIn_Account(long long ownerID)
         }
         free(accountOptions);
     }
-}
-void formatString(char *input)
-{
-    int len = strlen(input);
-    // Affichage
-    printf("\n%s==> %s", CYAN, GREEN );
-    for (int i = 0; i < len; i++)
-    {
-        printf("%c", input[i]);
-
-        if ((i + 1) % 4 == 0 && i != len - 1)
-        {
-            printf(" ");
-        }
-    }
-    printf(CYAN"%s <==\n\n\n", RESET);
-}
-
-void savehesto(hestoric data)
-{
-    FILE *file = fopen("hestorical.bin", "ab+"); // "ab" = append in binary mode
-    if (file == NULL)
-    {
-        perror("Error opening file");
-    }
-
-    // Write the struct to the file
-    fwrite(&data, sizeof(hestoric), 1, file);
-
-    // Close the file
-    fclose(file);
-    // printf("Data saved successfully.\n");
 }
 
 int authenticate_account(Account *selectedAccount)
