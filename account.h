@@ -70,4 +70,6 @@ void formatString(char *input);
 void FUNCTION(Account selectedAccount);
 void handleCategorySpecificAction(int choice);
 void payBills(Account *selectedAccount);
+int choose_item_with_return(char *items[], const char *message);
+void printHeader(const char *title);
 #endif // ACCOUNT_H

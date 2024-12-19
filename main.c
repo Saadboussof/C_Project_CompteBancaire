@@ -12,6 +12,7 @@ void welcom()
 
 void main()
 {
+    welcom();
     srand(time(NULL)); // Seed the random number generator
     system("cls");
     // welcom();
