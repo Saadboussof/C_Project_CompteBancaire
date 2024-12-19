@@ -42,5 +42,6 @@ void displaySpectacularLoadingBar(int duration);
 void gradientSpinner(int duration);
 void typingEffect(const char *text, int speed);
 void setCursor(int row, int col);
+void formatString(char *input);
 
 #endif // TOOLS_H

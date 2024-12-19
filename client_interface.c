@@ -1,7 +1,10 @@
 #include "client.h"
 
+char CIN[9] = {'\0'};
+
 void Client_Portal()
 {
+    memset(CIN, '\0', sizeof(CIN));
     char *Choices[] = {
         "Log in",
         "Sign Up",
@@ -9,33 +12,35 @@ void Client_Portal()
         "Exit",   // exit the app
         NULL};
 
-    int choice = choose_item(Choices, "Make your choice");
+    int choice = choose_item(Choices, "** Client Portal **");
 
-    switch (choice)
+    while (1)
     {
-    case 0:
-        logIn_Client();
-        break;
-    case 1:
-        signUpRequest();
-        break;
-    case 2:
-        main();
-        break;
-    default:
-        exit(0);
-        break;
+        switch (choice)
+        {
+            case 0:
+                logIn_Client();
+                break;
+            case 1:
+                signUpRequest();
+                break;
+            case 2:
+                main();
+                break;
+            default:
+                exit(0);
+                break;
+        }
     }
 }
 
-char CIN[9] = {'\0'};
 
 void requestCIN() // (8 caraters long) + (first alpha) + (second alpha or num) + (rest num)
 {
     while (1)
     {
         printf("Enter your CIN: ");
-        scanf(" %s", CIN);
+        scanf("%s", CIN);
 
         // Validate CIN
         if (isValidCIN(CIN))
@@ -118,6 +123,7 @@ void logIn_Client()
         displayClientDetails(client);
         logIn_Account(client->clientID);
     };
+    return;
 }
 
 int authenticateClient(Client *client)
@@ -151,7 +157,9 @@ int checkClientApprovalStatus(Client *client)
     if (!client->activation)
     {
         printf(ORANGE "Your account is still pending approval. Please wait for an update from the bank.\n" RESET "However, you can view your client details.\n" RED "If any information in details below is incorrect, click 1 and update it.\n" RESET);
+        
         displayClientDetails(client);
+        
         char choice;
         choice = getch();
         printf("\n");
@@ -177,7 +185,9 @@ void signUpRequest()
     else
     {
         Client newClient = createClient();
-        saveClientToFile(&newClient);
+        if(saveClientToFile(&newClient)) 
+            printf(GREEN "Client saved successfully!\n" RESET);
+        // Client_Portal();
         return;
     }
 }
@@ -338,7 +348,8 @@ void updateClient(char *cin)
     rename("temp_clients.dat", "clients.dat");
 
     printf(GREEN "Client details updated successfully in the database.\n" RESET);
-    main();
+    // main();
+    return;
 }
 
 void viewProcedInactive()

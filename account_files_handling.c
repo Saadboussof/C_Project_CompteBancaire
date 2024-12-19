@@ -339,6 +339,42 @@ void updateBankCard(BankCard *updatedCard) {
 //     printf("-------------------------------------------------------------\n");
 //     fclose(file); // Close the file
 // }
+
+// void searchByAccountID(long long searchID) {
+//     FILE *file = fopen("hestorical.bin", "rb"); // Open the historical file
+//     if (file == NULL) {
+//         perror("\033[1;31mError opening historical file\033[0m");
+//         return;
+//     }
+
+//     hestoric record;
+//     int found = 0;
+
+//     // Table Header
+//     printf("\n\033[1;36m========== Historical Records for Account: %lld ==========\033[0m\n", searchID);
+//     printf("\033[1;33m+---------------+--------------------------------+---------------------------+\033[0m\n");
+//     printf("\033[1;33m|   Amount DH   |           Detail               |           Date           |\033[0m\n");
+//     printf("\033[1;33m+---------------+--------------------------------+---------------------------+\033[0m\n");
+
+//     // Read and display each record for the given account ID
+//     while (fread(&record, sizeof(hestoric), 1, file) == 1) {
+//         if (record.AccountID == searchID) {
+//             printf("| \033[1;32m%10.2f DH\033[0m | \033[1;34m%-30s\033[0m | \033[1;35m%-25s\033[0m |\n", 
+//                    record.amount, record.detail, record.dateop);
+//             found = 1;
+//         }
+//     }
+
+//     // Table Footer
+//     printf("\033[1;33m+--------------+--------------------------------+---------------------------+\033[0m\n");
+
+//     if (!found) {
+//         printf("\033[1;31mNo historical records found for this account.\033[0m\n");
+//     }
+
+//     fclose(file); // Close the file
+// }
+
 void searchByAccountID(long long searchID) {
     FILE *file = fopen("hestorical.bin", "rb"); // Open the historical file
     if (file == NULL) {
@@ -350,26 +386,49 @@ void searchByAccountID(long long searchID) {
     int found = 0;
 
     // Table Header
-    printf("\n\033[1;36m========== Historical Records for Account: %lld ==========\033[0m\n", searchID);
-    printf("\033[1;33m+-------------+--------------------------------+---------------------------+\033[0m\n");
-    printf("\033[1;33m|   Amount DH |           Detail               |           Date           |\033[0m\n");
-    printf("\033[1;33m+-------------+--------------------------------+---------------------------+\033[0m\n");
+    printf("\n\033[1;36m================ Historical Records for Account: %lld =======================\033[0m\n", searchID);
+    printf(YELLOW "+---------------+--------------------------------+---------------------------+\n" RESET);
+    printf(YELLOW "|" RESET PURPLE "   Amount DH   " RESET YELLOW "|" RESET PURPLE "           Detail               "RESET YELLOW "|" RESET PURPLE "           Date            " RESET YELLOW "|" RESET"\n");
+    printf(YELLOW "+---------------+--------------------------------+---------------------------+\n" RESET);
 
     // Read and display each record for the given account ID
     while (fread(&record, sizeof(hestoric), 1, file) == 1) {
         if (record.AccountID == searchID) {
-            printf("| \033[1;32m%10.2f DH\033[0m | \033[1;34m%-30s\033[0m | \033[1;35m%-25s\033[0m |\n", 
-                   record.amount, record.detail, record.dateop);
+            // Determine the color for the amount
+            const char *amountColor = record.amount < 0 ? "\033[1;31m" : "\033[1;32m"; // Red for < 0, Green otherwise
+            printf(YELLOW"|" RESET " %s%10.2f DH " YELLOW "|" RESET " %-30s " YELLOW "|" RESET " %-25s " YELLOW "|\n" RESET, 
+                   amountColor, record.amount, record.detail, record.dateop);
             found = 1;
         }
     }
 
+    if (found) {
     // Table Footer
-    printf("\033[1;33m+-------------+--------------------------------+---------------------------+\033[0m\n");
+    printf(YELLOW "+---------------+--------------------------------+---------------------------+\n" RESET);
+    }
 
     if (!found) {
-        printf("\033[1;31mNo historical records found for this account.\033[0m\n");
+        printf(YELLOW "|                                                                            |\n" RESET);
+        printf(RED "\n|                No historical records found for this account                |\n"RESET);
+        printf(YELLOW "|                                                                            |\n" RESET);
+        printf(YELLOW "+---------------+--------------------------------+---------------------------+\n" RESET);
     }
 
     fclose(file); // Close the file
+}
+
+void savehesto(hestoric data)
+{
+    FILE *file = fopen("hestorical.bin", "ab+"); // "ab" = append in binary mode
+    if (file == NULL)
+    {
+        perror("Error opening file");
+    }
+
+    // Write the struct to the file
+    fwrite(&data, sizeof(hestoric), 1, file);
+
+    // Close the file
+    fclose(file);
+    // printf("Data saved successfully.\n");
 }

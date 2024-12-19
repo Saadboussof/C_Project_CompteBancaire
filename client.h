@@ -27,13 +27,13 @@ int checkClientApprovalStatus(Client *client);
 void signUpRequest();
 Client createClient();
 void updateClient(char *cin);
-void saveClientToFile(Client *client);
+int saveClientToFile(Client *client);
 Client *findClient(char *CIN, long long clientID, int searchByCIN);
 void processClientRequest();
-void reviewAccountUpdateRequest();
+void viewProcedInactive();
 void displayClientDetails(Client *client);
 void displayAllClients();
 void displayFilteredClients(int filterType, int filterValue);
-void viewProcedInactive();
+void displayClientLateral(Client *client);
 
 #endif // CLIENT_H
