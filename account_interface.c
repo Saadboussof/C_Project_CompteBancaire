@@ -16,7 +16,7 @@ void logIn_Account(long long ownerID)
         return;
     }
 
-    char **accountOptions = malloc((resultCount + 3) * sizeof(char *));
+    char **accountOptions = malloc((resultCount + 4) * sizeof(char *));
     if (!accountOptions)
     {
         printf(RED "ERROR : Failed to allocate memory.\n" RESET);
@@ -33,7 +33,8 @@ void logIn_Account(long long ownerID)
     }
     accountOptions[resultCount] = ORANGE "Create new account" RESET;
     accountOptions[resultCount + 1] = CYAN "Update your client profile" RESET;
-    accountOptions[resultCount + 2] = NULL;
+    accountOptions[resultCount + 2] = "Log out";
+    accountOptions[resultCount + 3] = NULL;
 
     int accountSelected = 0;
 
@@ -45,12 +46,16 @@ void logIn_Account(long long ownerID)
         {
             creatingAccountRequest(ownerID);
             return;
-        }
-        else if (index_account == resultCount + 1)
+        } else if (index_account == resultCount + 1)
         {
             Client *currentaccount = findClient("0", ownerID, 0);
             printf(BLUE "Client profile updating...\n" RESET);
             updateClient(currentaccount->CIN);
+            return;
+        } else if (index_account == resultCount + 2)
+        {
+            printf(RED "Loging out...\n" RESET);
+            logIn_Client;
             return;
         }
 
