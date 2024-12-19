@@ -1,18 +1,19 @@
 #include "client.h"
 #include <errno.h>
 
-void saveClientToFile(Client *client)
+int saveClientToFile(Client *client)
 {
     FILE *file = fopen("clients.dat", "ab");
     if (file == NULL)
     {
         printf(RED "ERROR : Failed to open file for saving client.\n" RESET);
         printf(RED "A critical error occurred while processing your request.\n" BOLD "Please try again later or contact support.\n" RESET);
+        return 0;
     }
 
     fwrite(client, sizeof(Client), 1, file);
     fclose(file);
-    printf(GREEN "Client saved successfully!\n" RESET);
+    return 1;
 }
 
 // Function to search for a client by CIN or clientID
@@ -81,18 +82,18 @@ void processClientRequest()
 
     while (fread(&client, sizeof(Client), 1, requestFile) == 1)
     {
-        hasRequests = 1;
-
         if (client.activation == 0)
         {
+            hasRequests++;
             // Only ask questions for inactive clients
-            printf(BLUE "Reviewing Request for Client:\n" RESET);
+            printf("======" BLUE " Reviewing Request N " RESET BOLD ORANGE "%d" RESET " for Client : " RESET "=====\n" RESET);
             displayClientDetails(&client);
 
             // Ask three questions: delete, activate, or skip
             printf(PURPLE "What would you like to do?\n" RESET);
-            printf("1- Activate this client\n");
-            printf("2- Delete this client\n");
+            printf(YELLOW "0-" RESET " Skip this client\n");
+            printf(GREEN "1-" RESET " Activate this client\n");
+            printf(RED "2-" RESET " Delete this client\n");
             printf(PURPLE "Enter your choice: " RESET);
 
             char choice;
@@ -104,18 +105,18 @@ void processClientRequest()
                 // Employee chose to activate the client, so set their account to active
                 client.activation = 1;
                 fwrite(&client, sizeof(Client), 1, tempFile); // Save the updated client to the temporary file
-                printf(GREEN "Client activated successfully.\n" RESET);
+                printf(GREEN "Client with CIN : %s activated successfully.\n" RESET, client.CIN);
             }
             else if (choice == '2')
             {
                 // Employee chose to delete the client, so don't save them back to the file
-                printf(RED "Client request rejected and deleted.\n" RESET);
+                printf(RED "Client request with CIN : %s rejected and deleted.\n" RESET, client.CIN);
                 continue; // Skip writing this client to the temp file (its just written for clarifcation)
             }
             else
             {
                 // Invalid choice, skip the client
-                printf(YELLOW "Invalid choice. Skipping this request.\n" RESET);
+                printf(YELLOW "Client request with CIN : %s skipped.\n" RESET, client.CIN);
                 fwrite(&client, sizeof(Client), 1, tempFile); // Save unchanged client to the temporary file
             }
         }
@@ -131,7 +132,7 @@ void processClientRequest()
 
     if (!hasRequests)
     {
-        printf(BLUE "No client requests found.\n" RESET);
+        printf(ORANGE "\tNo client requests found.\n" RESET);
         remove("temp_requests.dat");
         return;
     }
@@ -140,5 +141,5 @@ void processClientRequest()
     remove("clients.dat");                      // Delete the original file
     rename("temp_requests.dat", "clients.dat"); // Rename the temporary file to the original file name
 
-    printf(BLUE "Processed all client requests.\n" RESET);
+    printf(BLUE "\tProcessed " RESET BOLD "%d" RESET BLUE " client requests.\n" RESET);
 }

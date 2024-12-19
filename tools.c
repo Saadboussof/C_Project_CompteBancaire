@@ -40,7 +40,7 @@ int choose_item(char **items, char *title)
     while (1)
     {
         // Print title in bold and underlined yellow
-        setCursor(2, 103);
+        setCursor(2, 104);
         printf(BOLD UNDERLINE YELLOW "%s:\n" RESET, title);
 
         // Display menu options with highlighting on new lines
@@ -272,8 +272,6 @@ void gradientSpinner(int duration) {
         spinnerIndex = (spinnerIndex + 1) % 4 ;
         usleep(duration * 1000); // Adjust speed
     }
-
-    printf("\nDone!\n");
 }
 
 void typingEffect(const char *text, int speed) {
@@ -288,6 +286,23 @@ void typingEffect(const char *text, int speed) {
 // Function to set the cursor position
 void setCursor(int row, int col) {
     printf("\033[%d;%dH", row, col);
+}
+
+void formatString(char *input)
+{
+    int len = strlen(input);
+    // Affichage
+    printf("\n%s==> %s", CYAN, GREEN );
+    for (int i = 0; i < len; i++)
+    {
+        printf("%c", input[i]);
+
+        if ((i + 1) % 4 == 0 && i != len - 1)
+        {
+            printf(" ");
+        }
+    }
+    printf(CYAN"%s <==\n\n\n", RESET);
 }
 
 

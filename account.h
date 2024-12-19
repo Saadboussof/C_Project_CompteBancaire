@@ -64,12 +64,12 @@ void updateAccount(Account *updatedAccount);
 void displayAllAccounts();
 int rechargeOnline(Account *account);
 void payOnline(Account *account);
-void savehesto(hestoric data);
 void searchByAccountID(long long searchID);
-void formatString(char *input);
 void FUNCTION(Account selectedAccount);
 void handleCategorySpecificAction(int choice);
 void payBills(Account *selectedAccount);
 int choose_item_with_return(char *items[], const char *message);
 void printHeader(const char *title);
+void logPaidBill(long long accountID, int billID);
+int isBillPaid(long long accountID, int billID);
 #endif // ACCOUNT_H
