@@ -1,29 +1,27 @@
 #include "account.h"
 
-void saveAccountToFile(Account *account)
+int saveAccountToFile(Account *account)
 {
     FILE *file = fopen("accounts.dat", "ab");
     if (file == NULL)
     {
         perror(RED "ERROR : Failed to open accounts file for saving" RESET);
         printf(RED "A critical error occurred while processing your request. Please try again later or contact support.\n" RESET);
-        return;
+        return 0;
     }
 
     if (fwrite(account, sizeof(Account), 1, file) != 1)
     {
         perror(RED "ERROR : Failed to write to accounts file" RESET);
         printf(RED "A critical error occurred while processing your request. Please try again later or contact support.\n" RESET);
-    }
-    else
-    {
-        printf(GREEN "Account saved successfully!\n" RESET);
+        return 0;
     }
 
     fclose(file);
+    return 1;
 }
 
-void deleteAccountFromFile(long long accountID)
+int deleteAccountFromFile(long long accountID)
 {
     FILE *file = fopen("accounts.dat", "rb");
     FILE *tempFile = fopen("temp.dat", "wb");
@@ -36,7 +34,7 @@ void deleteAccountFromFile(long long accountID)
             fclose(file);
         if (tempFile)
             fclose(tempFile);
-        return;
+        return 0;
     }
 
     Account account;
@@ -51,19 +49,6 @@ void deleteAccountFromFile(long long accountID)
         else
         {
             found = 1;
-
-            // // Check account balance
-            // if (account.balance != 0)
-            // {
-            //     printf(RED "The account cannot be deleted because its balance is %.2f DH.\n" RESET, account.balance);
-            //     printf("Please ensure the balance is cleared to proceed with the deletion.\n");
-
-            //     fwrite(&account, sizeof(Account), 1, tempFile); // Keep the account in the file
-            //     continue;
-            // }
-
-            // // Notify employee of deletion
-            // // notifyEmployeeOfDeletion(&account);
         }
     }
 
@@ -74,22 +59,24 @@ void deleteAccountFromFile(long long accountID)
     {
         remove("accounts.dat");
         rename("temp.dat", "accounts.dat");
-        printf(GREEN "Account deleted successfully.\n" RESET);
+        return 1;
     }
     else
     {
         remove("temp.dat");
         printf(RED "Account not found.\n" RESET);
+        return 0;
     }
 }
 
-void updateAccount(Account *updatedAccount)
+int updateAccount(Account *updatedAccount)
 {
     // Step 1: Delete the existing account record
-    deleteAccountFromFile(updatedAccount->accountID);
+    if(!deleteAccountFromFile(updatedAccount->accountID)) return 0;
 
     // Step 2: Save the updated account record
-    saveAccountToFile(updatedAccount);
+    if (!saveAccountToFile(updatedAccount)) return 0;
+    return 1;
 }
 
 Account *searchAccountsByClientID(long long ownerID, int *resultCount)
@@ -127,7 +114,7 @@ Account *searchAccountsByClientID(long long ownerID, int *resultCount)
                 Account *temp = realloc(results, capacity * sizeof(Account));
                 if (temp == NULL)
                 {
-                    printf("ERROR : Failed to reallocate memory");
+                    printf(RED "ERROR : Failed to reallocate memory" RESET);
                     free(results);
                     fclose(file);
                     *resultCount = -1;
@@ -181,22 +168,22 @@ Account *searchAccountByID(long long accountID) {
     return result; // Return the found account
 }
 
-void saveBankCardToFile(BankCard *bankcard) {
-    FILE *file = fopen("bank_card.dat", "ab");
+int saveBankCardToFile(BankCard *bankcard) {
+    FILE *file = fopen("bank_card.dat", "ab+");
     if (file == NULL) {
         perror(RED "ERROR : Failed to open bank card file for saving" RESET);
         printf(RED "A critical error occurred while processing your request. Please try again later or contact support.\n" RESET);
-        return;
+        return 0;
     }
 
     if (fwrite(bankcard, sizeof(BankCard), 1, file) != 1) {
         perror(RED "ERROR : Failed to write to bank card file" RESET);
         printf(RED "A critical error occurred while processing your request. Please try again later or contact support.\n" RESET);
-    } else {
-        printf(GREEN "Bank card saved successfully!\n" RESET);
+        return 0;
     }
 
     fclose(file);
+    return 1;
 }
 
 BankCard searchBankCardByaccountID(long long accountID)
@@ -206,7 +193,6 @@ BankCard searchBankCardByaccountID(long long accountID)
     if (file == NULL)
     {
         printf("ERROR : Failed to open card file");
-        exit(EXIT_FAILURE);
     }
 
     BankCard bankcard;
@@ -218,17 +204,20 @@ BankCard searchBankCardByaccountID(long long accountID)
             return bankcard;
         }
     }
+
     fclose(file);
+
     BankCard emptyCard = {0}; // Return an empty BankCard object
+
     return emptyCard;
 }
 
-void deleteBankCardFromFile(long long cardAccountID) {
+int deleteBankCardFromFile(long long cardAccountID) {
     FILE *file = fopen("bank_card.dat", "rb");
     if (file == NULL) {
         perror(RED "ERROR : Failed to open bank card file for reading" RESET);
         printf(RED "A critical error occurred while processing your request. Please try again later or contact support.\n" RESET);
-        return;
+        return 0;
     }
 
     FILE *tempFile = fopen("temp_bank_card.dat", "wb");
@@ -236,7 +225,7 @@ void deleteBankCardFromFile(long long cardAccountID) {
         perror(RED "ERROR : Failed to create temporary file" RESET);
         printf(RED "A critical error occurred while processing your request. Please try again later or contact support.\n" RESET);
         fclose(file);
-        return;
+        return 0;
     }
 
     BankCard bankcard;
@@ -258,8 +247,9 @@ void deleteBankCardFromFile(long long cardAccountID) {
         // Replace original file with temp file
         if (remove("bank_card.dat") != 0 || rename("temp_bank_card.dat", "bank_card.dat") != 0) {
             perror(RED "ERROR : Failed to finalize the card deletion process" RESET);
+            return 0;
         } else {
-            printf(GREEN "Bank card deleted successfully!\n" RESET);
+            return 1;
         }
     } else {
         // No matching card found; remove temp file
@@ -268,20 +258,20 @@ void deleteBankCardFromFile(long long cardAccountID) {
     }
 }
 
-void updateBankCard(BankCard *updatedCard) {
+int updateBankCard(BankCard *updatedCard) {
     // Delete the old card record based on cardaccountID
-    deleteBankCardFromFile(updatedCard->cardaccountID);
+    if(!deleteBankCardFromFile(updatedCard->cardaccountID)) return 0;
 
     // Save the updated card record
-    saveBankCardToFile(updatedCard);
+    if(!saveBankCardToFile(updatedCard)) return 0;
 
-    printf(GREEN "Bank card updated successfully!\n" RESET);
+    return 1;
 }
 
 void searchByAccountID(long long searchID) {
-    FILE *file = fopen("hestorical.bin", "rb"); // Open the historical file
+    FILE *file = fopen("hestorical.bin", "ab+"); // Open the historical file
     if (file == NULL) {
-        perror("\033[1;31mError opening historical file\033[0m");
+        printf(RED "Error : Failed to open history file" RESET);
         return;
     }
 
@@ -289,7 +279,7 @@ void searchByAccountID(long long searchID) {
     int found = 0;
 
     // Table Header
-    printf("\n\033[1;36m================ Historical Records for Account: %lld =======================\033[0m\n", searchID);
+    printf(CYAN "================ Historical Records for Account: " ORANGE "%lld" RESET CYAN " =======================\n" RESET, searchID);
     printf(YELLOW "+---------------+--------------------------------+---------------------------+\n" RESET);
     printf(YELLOW "|" RESET PURPLE "   Amount DH   " RESET YELLOW "|" RESET PURPLE "           Detail               "RESET YELLOW "|" RESET PURPLE "           Date            " RESET YELLOW "|" RESET"\n");
     printf(YELLOW "+---------------+--------------------------------+---------------------------+\n" RESET);
@@ -311,8 +301,8 @@ void searchByAccountID(long long searchID) {
     }
 
     if (!found) {
-        printf(YELLOW "|                                                                            |\n" RESET);
-        printf(RED "\n|                No historical records found for this account                |\n"RESET);
+        printf(YELLOW "|                                                                            |" RESET);
+        printf(YELLOW "\n|" RESET RED "                No historical records found for this account                " RESET YELLOW "|\n"RESET);
         printf(YELLOW "|                                                                            |\n" RESET);
         printf(YELLOW "+---------------+--------------------------------+---------------------------+\n" RESET);
     }
@@ -333,5 +323,4 @@ void savehesto(hestoric data)
 
     // Close the file
     fclose(file);
-    // printf("Data saved successfully.\n");
 }

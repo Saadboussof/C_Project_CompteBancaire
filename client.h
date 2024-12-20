@@ -8,9 +8,9 @@ typedef struct
 {
     long long clientID;
     char CIN[9];
-    char name[30];
+    char name[20];
     char phoneNumber[11];
-    char address[50];
+    char address[30];
     char PIN[5];
     int activation;  // 0 - Inactive, 1 - Active
     int Blacklisted; // 0 - NO, 1 - Yes
@@ -34,6 +34,5 @@ void viewProcedInactive();
 void displayClientDetails(Client *client);
 void displayAllClients();
 void displayFilteredClients(int filterType, int filterValue);
-void displayClientLateral(Client *client);
 
 #endif // CLIENT_H

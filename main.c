@@ -8,11 +8,7 @@ void welcom()
     getch();
 
     displaySpectacularLoadingBar(50);
-    
-    for (int i = 0; i <= 6; i++)
-    {
-        fordelay(100000000);
-    }
+    fordelay(1200000000);
 
     system("cls");
     
@@ -24,7 +20,6 @@ int pmb = 1;
 void main()
 {
     srand(time(NULL)); // Seed the random number generator
-    
     system("cls"); // Clear the screen
 
     if (pmb) welcom();
@@ -36,7 +31,7 @@ void main()
         "Exit",
         NULL};
 
-    int choice = choose_item(Choices, "** HOME **");
+    int choice = choose_item(Choices, "Home");
 
     while(1) {
         switch (choice)

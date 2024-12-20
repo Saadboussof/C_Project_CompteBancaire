@@ -12,7 +12,7 @@ void Client_Portal()
         "Exit",   // exit the app
         NULL};
 
-    int choice = choose_item(Choices, "** Client Portal **");
+    int choice = choose_item(Choices, "Client Portal");
 
     while (1)
     {
@@ -97,6 +97,8 @@ void logIn_Client()
         switch (choice)
         {
         case '1':
+            fordelay(600000000);
+            system("cls");
             requestCIN();
             client = findClient(CIN, 0, 1);
             break;
@@ -106,6 +108,8 @@ void logIn_Client()
             break;
         default:
             printf(RED "Invalid choice. Please enter 1 or 2.\n" RESET);
+            fordelay(600000000);
+            system("cls");
             break;
         }
     }
@@ -120,6 +124,7 @@ void logIn_Client()
             printf(CYAN BOLD "." RESET);
         }
         printf("\n");
+        fordelay(1200000000);
         displayClientDetails(client);
         logIn_Account(client->clientID);
     };
@@ -180,7 +185,14 @@ void signUpRequest()
 
     if (findClient(CIN, 0, 1) != NULL)
     {
-        printf(BLUE "Client with CIN : %s already existe.\nRedirecting to login...\n" RESET, CIN);
+        printf("Client with CIN : "ORANGE"%s"RESET" already existe.\n", CIN);
+        printf(BLUE"Redirecting to login"RESET);
+        for (int i = 0; i <= 6; i++)
+        {
+            fordelay(100000000);
+            printf(BLUE BOLD "." RESET);
+        }
+        printf("\n");
         logIn_Client();
     }
     else
@@ -188,7 +200,7 @@ void signUpRequest()
         Client newClient = createClient();
         if(saveClientToFile(&newClient)) {
             printf(GREEN "Client saved successfully!\n" RESET);
-            fordelay(600000000);
+            fordelay(1200000000);
             system("cls");
         }
         Client_Portal();
@@ -200,11 +212,20 @@ Client createClient()
     Client newClient;
     int check = false;
 
-    printf(BLUE "Requesting client creation...\n" RESET);
+    fordelay(600000000);
+    system("cls");
+
+    printf(BLUE "Requesting client creation" RESET);
+    for (int i = 0; i <= 6; i++)
+    {
+        fordelay(100000000);
+        printf(BLUE BOLD "." RESET);
+    }
+    printf("\n");
 
     while (!check)
     {
-        printf("Enter Client Name: ");
+        printf("Enter Client Name: " GREEN);
         scanf(" %[^\n]", newClient.name);
         check = isAlphaString(newClient.name);
         if (!check)
@@ -217,24 +238,25 @@ Client createClient()
 
     while (!check)
     {
-        printf("Enter Client Phone Number: ");
+        printf(RESET"Enter Client Phone Number: "GREEN);
         scanf(" %[^\n]", newClient.phoneNumber);
         check = (isNumericString(newClient.phoneNumber) && (strlen(newClient.phoneNumber) == 10) && (newClient.phoneNumber[0] == '0'));
         if (!check)
-            printf(RED "Invalide Phone Number please try again.\n" RESET);
+            printf(RESET RED "Invalide Phone Number please try again.\n" RESET);
     }
     check = false;
 
-    printf("Enter Client Address: ");
+    printf(RESET"Enter Client Address: "GREEN);
     scanf(" %[^\n]", newClient.address);
+    printf(RESET"");
 
     newClient.Blacklisted = 0;
-    newClient.activation = 1;   TODO: // test
+    newClient.activation = 1;   // TODO: test
 
     setAndConfirmPIN(newClient.PIN);
 
     newClient.clientID = generateRandomAccountNumber();
-    printf("Your Client ID: %lld\n", newClient.clientID);
+    printf("Your Client ID: "BOLD"%lld\n"RESET, newClient.clientID);
 
     getCurrentDate(newClient.dateCreated, sizeof(newClient.dateCreated));
     printf("Client request created on: %s\n", newClient.dateCreated);
@@ -278,9 +300,9 @@ void updateClient(char *cin)
             while (a)
             {
                 printf(YELLOW "Which field would you like to modify?\n" RESET);
-                printf("0- Skip\n");
-                printf("1- Phone Number\n");
-                printf("2- Address\n");
+                printf("0 -  Skip\n");
+                printf("1 -  Phone Number\n");
+                printf("2 -  Address\n");
 
                 char choice;
                 choice = getch();
@@ -329,6 +351,7 @@ void updateClient(char *cin)
                     printf(ORANGE "Invalid choice. No changes were made.\n" RESET);
                     break;
                 }
+                fordelay(900000000);
             }
         }
 
@@ -351,7 +374,7 @@ void updateClient(char *cin)
     rename("temp_clients.dat", "clients.dat");
 
     printf(GREEN "Client details updated successfully in the database.\n" RESET);
-    fordelay(600000000);
+    fordelay(1000000000);
     system("cls");
     return;
 }

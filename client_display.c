@@ -2,28 +2,23 @@
 
 void displayClientDetails(Client *client)
 {
+    system("cls");
+    setCursor(2, 40);
     printf(PURPLE "---------- Client information : ----------\n" RESET);
-    printf("Client ID         : %lld\n", client->clientID);
-    printf("CIN               : %s\n", client->CIN);
-    printf("Name              : %s\n", client->name);
-    printf("Phone Number      : %s\n", client->phoneNumber);
-    printf("Address           : %s\n", client->address);
-    printf("Account Created on: %s\n", client->dateCreated);
+    setCursor(3, 40);
+    printf(CYAN "Client ID         : " RESET "%lld\n", client->clientID);
+    setCursor(4, 40);
+    printf(CYAN "CIN               : " RESET "%s\n", client->CIN);
+    setCursor(5, 40);
+    printf(CYAN "Name              : " RESET "%s\n", client->name);
+    setCursor(6, 40);
+    printf(CYAN "Phone Number      : " RESET "%s\n", client->phoneNumber);
+    setCursor(7, 40);
+    printf(CYAN "Address           : " RESET "%s\n", client->address);
+    setCursor(8, 40);
+    printf(CYAN "Account Created on: " RESET "%s\n", client->dateCreated);
+    setCursor(9, 40);
     printf(PURPLE "------------------------------------------\n" RESET);
-}
-
-void displayClientLateral(Client *client)
-{
-    setCursor(21, 104);
-    printf(PURPLE "<-- Client information : -->\n" RESET);
-    setCursor(22, 104);
-    printf("Client ID         :" CYAN " %lld\n" RESET , client->clientID);
-    setCursor(23, 104);
-    printf("CIN               :" CYAN " %s\n" RESET , client->CIN);
-    setCursor(24, 104);
-    printf("Name              :" CYAN " %s\n" RESET , client->name);
-    setCursor(25, 104);
-    printf("Phone Number      :" CYAN " %s\n" RESET , client->phoneNumber);
 }
 
 void displayAllClients()
@@ -43,7 +38,7 @@ void displayAllClients()
     printf(PURPLE
            "+------------------------------------------------------ All Clients -------------------------------------------------------+\n" RESET);
     setCursor(22, 4);
-    printf(PURPLE "|" RESET ORANGE " %-2s " RESET PURPLE "|" RESET ORANGE " %-9s " RESET PURPLE "|" RESET ORANGE " %-8s " RESET PURPLE "|" RESET ORANGE " %-29s " RESET PURPLE "|" RESET ORANGE " %-12s " RESET PURPLE "|" RESET ORANGE " %-11s " RESET PURPLE "|" RESET ORANGE " %-6s " RESET PURPLE "|" RESET ORANGE " %-22s " RESET PURPLE "|" RESET "\n", "No", "Client ID", "CIN", "Name", "Phone Number", "Blacklisted", "Active", "Date Created");
+    printf(PURPLE "|" RESET ORANGE " %-2s " RESET PURPLE "|" RESET ORANGE " %-9s " RESET PURPLE "|" RESET ORANGE " %-8s " RESET PURPLE "|" RESET ORANGE " %-19s " RESET PURPLE "|" RESET ORANGE " %-12s " RESET PURPLE "|" RESET ORANGE " %-11s " RESET PURPLE "|" RESET ORANGE " %-6s " RESET PURPLE "|" RESET ORANGE " %-22s " RESET PURPLE "|" RESET "\n", "No", "Client ID", "CIN", "Name", "Phone Number", "Blacklisted", "Active", "Date Created");
     setCursor(23, 4);
     printf(PURPLE "+--------------------------------------------------------------------------------------------------------------------------+\n" RESET);
 
@@ -51,7 +46,7 @@ void displayAllClients()
     {
         count++;
         setCursor(23 + count, 4);
-        printf("" PURPLE "|" RESET CYAN " %-2d " RESET PURPLE "|" RESET " %-9lld " PURPLE "|" RESET " %-8s " PURPLE "|" RESET " %-29s " PURPLE "|" RESET BOLD " %-12s " RESET PURPLE "|" RESET " %-11s " PURPLE "|" RESET " %-6s " PURPLE "|" RESET " %-22s " PURPLE "|" RESET "\n",
+        printf("" PURPLE "|" RESET CYAN " %-2d " RESET PURPLE "|" RESET " %-9lld " PURPLE "|" RESET " %-8s " PURPLE "|" RESET " %-19s " PURPLE "|" RESET BOLD " %-12s " RESET PURPLE "|" RESET " %-11s " PURPLE "|" RESET " %-6s " PURPLE "|" RESET " %-22s " PURPLE "|" RESET "\n",
                count,
                client.clientID,
                client.CIN,
@@ -101,7 +96,7 @@ void displayFilteredClients(int filterType, int filterValue) // 0- Blacklist  1-
     printf(PURPLE "\n+--------- Filtered Clients (%s : %s" PURPLE ") -----------------+\n" RESET,
            filterTypeDescription, filterValueDescription);
 
-    printf(PURPLE "|" RESET ORANGE " %-2s " RESET PURPLE "|" RESET ORANGE " %-9s " RESET PURPLE "|" RESET ORANGE " %-8s " RESET PURPLE "|" RESET ORANGE " %-30s " RESET PURPLE "|" RESET ORANGE " %-12s " RESET PURPLE "|" RESET "\n", "No", "Client ID", "CIN", "Name", "Phone Number");
+    printf(PURPLE "|" RESET ORANGE " %-2s " RESET PURPLE "|" RESET ORANGE " %-9s " RESET PURPLE "|" RESET ORANGE " %-8s " RESET PURPLE "|" RESET ORANGE " %-19s " RESET PURPLE "|" RESET ORANGE " %-12s " RESET PURPLE "|" RESET "\n", "No", "Client ID", "CIN", "Name", "Phone Number");
 
     printf(PURPLE "+---------------------------------------------------------------------------+\n" RESET);
 
@@ -110,7 +105,7 @@ void displayFilteredClients(int filterType, int filterValue) // 0- Blacklist  1-
         if (((filterType && filterValue) && (client.activation == 1)) || ((filterType && !filterValue) && (client.activation == 0)) || ((!filterType && filterValue) && (client.Blacklisted == 1)) || ((!filterType && !filterValue) && (client.Blacklisted == 0)))
         {
             count++;
-            printf("" PURPLE "|" RESET CYAN " %-2d " RESET PURPLE "|" RESET " %-9lld " PURPLE "|" RESET " %-8s " PURPLE "|" RESET " %-30s " PURPLE "|" RESET BOLD " %-12s " RESET PURPLE "|" RESET "\n",
+            printf("" PURPLE "|" RESET CYAN " %-2d " RESET PURPLE "|" RESET " %-9lld " PURPLE "|" RESET " %-8s " PURPLE "|" RESET " %-19s " PURPLE "|" RESET BOLD " %-12s " RESET PURPLE "|" RESET "\n",
                    count,
                    client.clientID,
                    client.CIN,

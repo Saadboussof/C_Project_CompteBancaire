@@ -11,9 +11,9 @@ void logIn_Account(long long ownerID)
 
     if (resultCount == 0)
     {
-        printf(BLUE "No accounts found. Creating a new account...\n" RESET);
+        printf(BLUE "\n\nNo accounts found. Creating a new account...\n" RESET);
         creatingAccountRequest(ownerID);
-        return;
+        logIn_Account(ownerID);
     }
 
     char **accountOptions = malloc((resultCount + 4) * sizeof(char *));
@@ -45,13 +45,22 @@ void logIn_Account(long long ownerID)
         if (index_account == resultCount)
         {
             creatingAccountRequest(ownerID);
-            return;
+            logIn_Account(ownerID);
         } else if (index_account == resultCount + 1)
         {
             Client *currentaccount = findClient("0", ownerID, 0);
-            printf(BLUE "Client profile updating...\n" RESET);
+            printf(BLUE "Client profile updating" RESET);
+            for (int i = 0; i <= 6; i++)
+            {
+                fordelay(100000000);
+                printf(BLUE BOLD "." RESET);
+            }
+            printf("\n");
+
             updateClient(currentaccount->CIN);
-            return;
+
+            displayClientDetails(currentaccount);
+            logIn_Account(ownerID);
         } else if (index_account == resultCount + 2)
         {
             printf(RED "Loging out...\n" RESET);
@@ -61,6 +70,12 @@ void logIn_Account(long long ownerID)
 
         Account selectedAccount = accounts[index_account];
 
+        if (!selectedAccount.isActive)
+        {
+            printf(ORANGE "Your account is still pending approval. Please wait for an update from the bank.\n" RESET);
+            printf("You can select another account.\n");
+            continue; // Skip the rest of the loop and ask the user to choose another account
+        }
         if (selectedAccount.isBlocked)
         {
             printf(RED "This account is blocked. You cannot log in.\n" RESET);
@@ -71,7 +86,7 @@ void logIn_Account(long long ownerID)
 
         if (authenticate_account(&selectedAccount))
         {
-            // gradientSpinner(50); // 50 ms per frame
+            gradientSpinner(50);
 
             displayAccountDetails(selectedAccount);
             FUNCTION(selectedAccount);
@@ -135,8 +150,9 @@ void creatingAccountRequest(long long ownerID)
     newAccount.ownerID = ownerID;
 
     // The balance of a new Account is 0.00 and it's unblocked.
-    newAccount.balance = 2000.00; TODO: // test
+    newAccount.balance = 2000.00; // TODO: test
 
+    newAccount.isActive = 1; // TODO: test
     newAccount.isBlocked = 0;
 
     // Select account type:
@@ -148,7 +164,7 @@ void creatingAccountRequest(long long ownerID)
 
     // Generate a random account ID and set creation date:
     newAccount.accountID = generateRandomAccountNumber();
-    printf("Your account ID: %lld\n", newAccount.accountID);
+    printf("Your account ID: "BOLD"%lld\n"RESET, newAccount.accountID);
 
     getCurrentDate(newAccount.dateCreated, sizeof(newAccount.dateCreated));
     printf("Account created on: %s\n", newAccount.dateCreated);
@@ -157,14 +173,16 @@ void creatingAccountRequest(long long ownerID)
     requestBankCard(newAccount);
 
     // Save the request of account creation in the request file:
-    saveAccountToFile(&newAccount);
-
+    printf("\n");
     typingEffect(YELLOW "Request Creation..." RESET, 50);
     typingEffect(BLUE "Request Processing..." RESET, 50);
-    typingEffect(GREEN "Request Submission..." RESET, 50);
-    printf(BOLD "Done!\n" RESET);
-
-    printf(GREEN "Your account creation request has been submitted successfully!\n" RESET);
+    if(saveAccountToFile(&newAccount)) {
+        typingEffect(GREEN "Request Submission..." RESET, 50);
+        printf("\n");
+        printf(GREEN "Your account creation request has been submitted successfully!\n" RESET);
+        fordelay(1200000000);
+        system("cls");
+    }
 }
 
 char *CARD_TYPES[] = {
@@ -177,7 +195,7 @@ char *CARD_TYPES[] = {
 void requestBankCard(Account account)
 {
     char response[2];
-    printf(BLUE "Would you like to request a bank card? (y/n): " RESET);
+    printf(CYAN "Would you like to request a bank card? (y/n): " RESET);
     scanf("%1s", response);
 
     // Convert input to lowercase for easier comparison
@@ -245,8 +263,8 @@ void requestBankCard(Account account)
         bankcard.cardaccountID = account.accountID;
 
         // Inform the client that the card request is successful
+        if(saveBankCardToFile(&bankcard))
         printf(GREEN "Your card request has been successfully submitted.\n" RESET "You can collect it at the bank once approved.\n");
-        saveBankCardToFile(&bankcard);
     }
     else if (strcmp(response, "n") == 0)
     {
@@ -255,5 +273,43 @@ void requestBankCard(Account account)
     else
     {
         printf(RED "Invalid response. Please answer 'y' or 'n'.\n" RESET);
+        requestBankCard(account);
+    }
+}
+
+void handleCardBlocking(BankCard *bankCard) {
+    if (bankCard->cardaccountID == 0) {
+        printf(RED "No card associated with the account.\n" RESET);
+        return;
+    }
+
+    if (bankCard->cardBlocked == 0) {
+        // Card is unblocked, ask user to block it
+        printf(CYAN "Your card is currently unblocked.\n" RESET);
+        printf(YELLOW "Do you want to block it? (y/n): " RESET);
+        char choice;
+        scanf(" %c", &choice);
+
+        if (choice == 'y' || choice == 'Y') {
+            bankCard->cardBlocked = 1; // Block the card
+            if(updateBankCard(bankCard)) //!!!!!!!!!!!!!!!!!!!!!!!!!
+            printf(GREEN "Your card has been successfully blocked.\n" RESET);
+        } else {
+            printf(CYAN "No changes made. Your card remains unblocked.\n" RESET);
+        }
+    } else {
+        // Card is blocked, ask user to unblock it
+        printf(CYAN "Your card is currently blocked.\n" RESET);
+        printf(YELLOW "Do you want to unblock it? (y/n): " RESET);
+        char choice;
+        scanf(" %c", &choice);
+
+        if (choice == 'y' || choice == 'Y') {
+            bankCard->cardBlocked = 0; // Unblock the card
+            updateBankCard(bankCard);
+            printf(GREEN "Your card has been successfully unblocked.\n" RESET);
+        } else {
+            printf(CYAN "No changes made. Your card remains blocked.\n" RESET);
+        }
     }
 }
