@@ -60,7 +60,7 @@ void updateEmployeeDetails(Employee *loggedInEmployee)
         "Change Password",
         "Update Phone Number",
         "Update Address",
-        "Exit",   // Exit the menu
+        "Return",   // Exit the menu
         NULL};
 
     int choice;
@@ -202,5 +202,122 @@ void deleteEmployee(Employee *loggedInEmployee)
     {
         printf(ORANGE "No employee found with ID %lld.\n" RESET, targetEmployeeID);
         remove("temp.dat");
+    }
+}
+
+
+
+// void handleAccountBlocking(Client *client)
+// {
+//     client->Blacklisted = ~client->Blacklisted; // Toggle block status
+// }
+
+void toggleAccountStatusByID(Employee *loggedInEmployee)
+{
+    // Ensure only admins can access this functionality
+    // if (loggedInEmployee == NULL || !loggedInEmployee->isAdmin)
+    // {
+    //     printf(RED "ERROR: Access Denied.\n" RESET);
+    //     printf(YELLOW "Only admins can toggle account statuses.\n" RESET);
+    //     return;
+    // }
+
+    long long accountID;
+    printf("Enter the Account ID to toggle status: ");
+    scanf("%lld", &accountID);
+
+    Account *account = searchAccountByID(accountID); // Search for the account
+    if (account == NULL) // Check if the account was found
+    {
+        printf(RED "ERROR: No account found with ID: %lld\n" RESET, accountID);
+        return;
+    }
+
+    // Display current status of the account
+    printf("\nAccount Found:\n");
+    // printf("Account Holder Name: %s\n", account->holderName);
+    printf("Current Status: %s\n", account->isBlocked ? RED "Blocked" RESET : GREEN "Active" RESET);
+
+    // Prompt the user for confirmation
+    int choice;
+    printf("\nDo you want to change the status of this account? (1 = Yes, 0 = No): ");
+    scanf("%d", &choice);
+
+    if (choice == 1)
+    {
+        // Use the provided function to toggle the account's status
+        handleAccountBlocking(account);
+
+        // Provide feedback to the admin
+        printf(GREEN "The account status has been updated successfully.\n" RESET);
+        printf("New Status: %s\n", account->isBlocked ? RED "Blocked" RESET : GREEN "Active" RESET);
+    }
+    else
+    {
+        printf(YELLOW "Account status remains unchanged.\n" RESET);
+    }
+}
+
+
+
+void deleteClientByID(Employee *loggedInEmployee)
+{
+    // Ensure only admins can access this functionality
+    // if (loggedInEmployee == NULL || !loggedInEmployee->isAdmin)
+    // {
+    //     printf(RED "ERROR: Access Denied.\n" RESET);
+    //     printf(YELLOW "Only admins can delete client records.\n" RESET);
+    //     return;
+    // }
+
+    long long clientID;
+    printf("Enter the Client ID to delete: ");
+    scanf("%lld", &clientID);
+
+    FILE *file = fopen("clients.dat", "rb"); // Open the original file for reading
+    if (file == NULL)
+    {
+        printf(RED "ERROR: Unable to access the client database.\n" RESET);
+        return;
+    }
+
+    FILE *tempFile = fopen("temp_clients.dat", "wb"); // Temporary file for updated data
+    if (tempFile == NULL)
+    {
+        fclose(file);
+        printf(RED "ERROR: Unable to create a temporary file.\n" RESET);
+        return;
+    }
+
+    Client client;
+    int isDeleted = 0;
+
+    while (fread(&client, sizeof(Client), 1, file) == 1)
+    {
+        if (client.clientID == clientID)
+        {
+            isDeleted = 1; // Mark that the client was found and deleted
+            printf(GREEN "Client with ID %lld has been successfully deleted.\n" RESET, clientID);
+        }
+        else
+        {
+            fwrite(&client, sizeof(Client), 1, tempFile); // Write to the temp file if not deleted
+        }
+    }
+
+    fclose(file);
+    fclose(tempFile);
+
+    if (isDeleted)
+    {
+        // Replace the old file with the new file
+        remove("clients.dat");
+        rename("temp_clients.dat", "clients.dat");
+    }
+    else
+    {
+        // No client with the given ID was found
+        printf(YELLOW "No client found with ID %lld. No changes were made.\n" RESET, clientID);
+        remove("temp_clients.dat"); // Clean up the temporary file
     }
 }

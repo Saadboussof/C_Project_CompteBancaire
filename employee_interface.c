@@ -347,6 +347,8 @@ void Regular_Employee_Interface(Employee *loggedInEmployee)
     char *Choices[] = {
         "Approve/Reject Clients",
         "Display All Clients",
+        "Blocked/Activite account",
+        "Delete Client",
         "Return",
         "Exit",   // Return to the previous menu or logout
         NULL};
@@ -368,11 +370,18 @@ void Regular_Employee_Interface(Employee *loggedInEmployee)
             // printf("2");
             displayAllClients();
             break;
+        case 2: // return 
+            toggleAccountStatusByID(loggedInEmployee);      
+            return;  
 
-        case 2: // return          
+        case 3: // return  
+            deleteClientByID(loggedInEmployee);        
+            return;
+
+        case 4: // return          
             return;    
 
-        case 3: // Exit
+        case 5: // Exit
             printf("\nExit Program...\n");
             free(loggedInEmployee); // Free memory
             loggedInEmployee = NULL; // Reset the global pointer
