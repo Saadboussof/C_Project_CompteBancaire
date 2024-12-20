@@ -33,7 +33,8 @@ void displayAllEmployees(Employee *loggedInEmployee);
 void deleteEmployee(Employee *loggedInEmployee);
 void Admin_Interface(Employee *loggedInEmployee);
 void Regular_Employee_Interface(Employee *loggedInEmployee);
-
+void toggleAccountStatusByID(Employee *loggedInEmployee);
+void deleteClientByID(Employee *loggedInEmployee);
 
 
 
