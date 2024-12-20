@@ -19,7 +19,6 @@ void welcom()
 
     system("cls");
     
->>>>>>> 490e06c837a535f7b993496f68f6b5788a40d362
     printf(CYAN "\t\t\t\t\xB2\xB2\xB2\xB2\xB2\xB2\xB2 Welcome to your BANK MANAGMENT SYSTEM \xB2\xB2\xB2\xB2\xB2\xB2\xB2\n\n\n" RESET);
 }
 
