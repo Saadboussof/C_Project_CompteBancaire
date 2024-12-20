@@ -25,6 +25,7 @@ typedef struct
     char accountType[20];
     char PIN[5];   // 4-digit PIN (with null terminator)
     int isBlocked; // 0 for unblocked account
+    int isActive;
     char dateCreated[23];
 
     float *transactionHistory; // Pointer for transaction history (optional)
@@ -54,13 +55,13 @@ void displayAccountDetails(Account account);
 void handleAccountBlocking(Account *account);
 void requestBankCard(Account account);
 void displayBankCardInfo(Account account);
-void saveBankCardToFile(BankCard *bankcard);
-void deleteBankCardFromFile(long long cardAccountID);
-void updateBankCard(BankCard *updatedCard);
+int saveBankCardToFile(BankCard *bankcard);
+int deleteBankCardFromFile(long long cardAccountID);
+int updateBankCard(BankCard *updatedCard);
 BankCard searchBankCardByaccountID(long long accountID);
-void saveAccountToFile(Account *account);
-void deleteAccountFromFile(long long accountID);
-void updateAccount(Account *updatedAccount);
+int saveAccountToFile(Account *account);
+int deleteAccountFromFile(long long accountID);
+int updateAccount(Account *updatedAccount);
 void displayAllAccounts();
 int rechargeOnline(Account *account);
 void searchByAccountID(long long searchID);
@@ -71,6 +72,8 @@ void logPaidBill(long long accountID, int billID);
 int isBillPaid(long long accountID, int billID);
 void savehesto(hestoric data);
 void transferBalanceToCard(Account *account, BankCard *bankCard);
+void handleCardBlocking(BankCard *bankCard);
+void displayFilteredAccounts(int filterType, int filterValue);
 
 
 #endif // ACCOUNT_H

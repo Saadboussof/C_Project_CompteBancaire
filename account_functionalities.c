@@ -5,7 +5,7 @@
 void printHeader(const char *title)
 {
     printf("\n" CYAN "=================================================\n" RESET);
-    printf(GREEN "                   %s                    \n" RESET, title);
+    printf(GREEN "              %s                    \n" RESET, title);
     printf(CYAN "=================================================\n" RESET);
 }
 
@@ -22,8 +22,8 @@ int rechargeOnline(Account *account)
     printHeader("Recharge Your Phone");
 
     // Étape 1: Obtenir le numéro de téléphone
-    printf("Linked phone number found: " GREEN "%s\n" RESET, linkedClient->phoneNumber);
-    printf(ORANGE "Do you want to recharge this number? (y/n): " RESET);
+    printf("\n--> Linked phone number found: " BOLD "%s\n" RESET, linkedClient->phoneNumber);
+    printf(ORANGE "\nDo you want to recharge this number? (y/n): " RESET);
 
     char response[2];
     scanf("%1s", response);
@@ -43,7 +43,7 @@ int rechargeOnline(Account *account)
     int providerIndex = choose_item(TELECOM_PROVIDERS, "Choose Telecom Provider");
     if (providerIndex == -1) return 0;
 
-    printf(GREEN "Selected provider: %s\n" RESET, TELECOM_PROVIDERS[providerIndex]);
+    printf("Selected provider: " GREEN "%s\n" RESET, TELECOM_PROVIDERS[providerIndex]);
 
     // Étape 3: Choisir le montant de la recharge
     int amountIndex = choose_item(RECHARGE_AMOUNTS, "Choose Recharge Amount");
@@ -75,14 +75,14 @@ int rechargeOnline(Account *account)
     int rechargeTypeIndex = choose_item(RECHARGE_TYPES, "Choose Recharge Type");
     if (rechargeTypeIndex == -1) return 0;
 
-    printf(GREEN "Selected recharge type: %s\n" RESET, RECHARGE_TYPES[rechargeTypeIndex]);
+    printf("Selected recharge type: " GREEN "%s\n" RESET, RECHARGE_TYPES[rechargeTypeIndex]);
 
     // Étape 5: Confirmer avant la déduction
-    printf("\n" CYAN "You are about to recharge:\n" RESET);
-    printf(GREEN "Phone Number   : %s\n" RESET, phoneNumber);
-    printf(GREEN "Recharge Amount: %d DH\n" RESET, amount);
-    printf(GREEN "Recharge Type  : %s\n" RESET, RECHARGE_TYPES[rechargeTypeIndex]);
-    printf(RED "Do you confirm? (y/n): " RESET);
+    printf("\n" YELLOW "You are about to recharge :\n" RESET);
+    printf("Phone Number   : %s\n", phoneNumber);
+    printf("Recharge Amount: %d DH\n", amount);
+    printf("Recharge Type  : %s\n", RECHARGE_TYPES[rechargeTypeIndex]);
+    printf(CYAN "Do you want confirm? (y/n): " RESET);
     scanf("%1s", response);
 
     if (tolower(response[0]) != 'y')
@@ -105,24 +105,24 @@ int rechargeOnline(Account *account)
 
     // Affichage des détails finaux
     printf("\n" GREEN "Recharge successful!\n" RESET);
-    printf(BLUE "====================================\n" RESET);
-    printf(PURPLE "Phone Number   : " RESET "%s\n", phoneNumber);
-    printf(PURPLE "Recharge Amount: " RESET "%d DH\n", amount);
-    printf(PURPLE "Recharge Type  : " RESET "%s\n", RECHARGE_TYPES[rechargeTypeIndex]);
-    printf(PURPLE "Remaining Balance: " RESET "%.2f DH\n", account->balance);
-    printf(BLUE "====================================\n\n" RESET);
+    printf(BOLD "\n====================================\n" RESET);
+    printf("Phone Number   : %s\n", phoneNumber);
+    printf("Recharge Amount: %d DH\n", amount);
+    printf("Recharge Type  : %s\n", RECHARGE_TYPES[rechargeTypeIndex]);
+    printf(BOLD "====================================\n\n" RESET);
+    printf("\nRemaining Balance: %.2f DH\n", account->balance);
 
     return 1; // Recharge réussie
 }
 
 char *Choicess[] = {
-    "Display info",
+    "Display card info",
     "Online recharge",
-    "Fact pay",
+    "Facture payment",
     "Card number",
     "Transaction",
     "History",
-    "transfertocard",
+    "transfertcard",
     "Return",
     "Exit",
     NULL};
@@ -147,7 +147,7 @@ void FUNCTION(Account selectedAccount)
             break;
 
         case 3:
-            printf("\033[1;34m _________ Your number card is : _________ \033[0m\n");
+            printf(BLUE "\n\t\t_________ Your number card is : _________ \n" RESET);
             BankCard bankCard = searchBankCardByaccountID(selectedAccount.accountID);
             printf(" \n");
             formatString(bankCard.cardNumber);
@@ -159,13 +159,16 @@ void FUNCTION(Account selectedAccount)
             int i = 0 ;
             while (1)
             {
-                printf("Give the ID o the account you want to send money to : ");
+                printf("\nGive the ID of the account you want to send money to : ");
                 scanf("%lld", &ID);
 
                 distAccount = searchAccountByID(ID);
                 if (distAccount == NULL)
                 {
-                   printf(RED "The account does not exist in databases !! \n try again !! \n\n\n" RESET);
+                   printf(RED "The account does not exist in databases !!\n" RESET "try again");
+                   system("cls");
+                   fordelay(1500000000);
+                   printf(ORANGE "Attempt %d/3"RESET, i+1);
                 }
                 else break;
                 i++ ;
@@ -181,6 +184,8 @@ void FUNCTION(Account selectedAccount)
             }
             else
             {
+                printf(GREEN"Operation succesful\n"RESET);
+                printf("You send an amount of "BOLD"%2.f"RESET" to the account "BOLD"%lld\n"RESET, much, ID);
                 selectedAccount.balance = selectedAccount.balance - much;
                 distAccount->balance = distAccount->balance + much;
                 updateAccount(distAccount);
@@ -208,13 +213,22 @@ void FUNCTION(Account selectedAccount)
             // Transfer balance to card
             BankCard bankCard = searchBankCardByaccountID(selectedAccount.accountID);
             if (bankCard.cardaccountID == 0) {
-                printf(RED "No bank card is associated with this account.\n" RESET);
+                printf(RED "\tNo bank card is associated with this account.\n" RESET);
                 continue;
             }
             transferBalanceToCard(&selectedAccount, &bankCard);
             continue;
         }
+
         case 7:
+            BankCard bkCard = searchBankCardByaccountID(selectedAccount.accountID);
+            if (bkCard.cardaccountID == 0) {
+                printf(RED "No bank card is associated with this account.\n" RESET);
+            }
+            handleCardBlocking(&bkCard);
+            continue;
+
+        case 8:
             logIn_Account(selectedAccount.ownerID);
 
         default:
@@ -223,26 +237,38 @@ void FUNCTION(Account selectedAccount)
         }
     }
 }
+
 void transferBalanceToCard(Account *account, BankCard *bankCard) {
-    printf("\n\033[1;36m------ Transfer Balance to Card ------\033[0m\n");
-    printf("\033[1;35mYour current account balance: %.2f DH\033[0m\n", account->balance);
+    printf(CYAN "\n------ Transfer Balance to Card ------\n\n" RESET);
+    printf("Your current account balance: " BOLD "%.2f DH\n" RESET, account->balance);
 
     if (account->balance <= 0) {
-        printf("\033[1;31mError: Insufficient account balance to transfer!\033[0m\n");
+        printf(RED "Error: Insufficient account balance to transfer!\n" RESET);
         return;
     }
 
     float transferAmount;
+    char choice;
+
     while (1) {
-        printf("\033[1;34mEnter the amount to transfer to your card: \033[0m");
+        printf("Enter the amount to transfer to your card: ");
         scanf("%f", &transferAmount);
 
         if (transferAmount <= 0 || transferAmount > account->balance) {
-            printf("\033[1;31mInvalid amount. Please enter a valid amount less than or equal to your account balance.\033[0m\n");
+            printf(RED "Invalid amount.\n" RESET "Please enter a valid amount less than or equal to your account balance.\n");
+            printf("Would you like to try again? (y/n): ");
+            choice = getch();
+            printf("\n");
+
+            if (choice == 'n' || choice == 'N') {
+                printf(ORANGE "Transfer process canceled.\n" RESET);
+                return; // Exit the function if the user cancels.
+            }
         } else {
             break;
         }
     }
+
     // Deduct amount from account balance and add to card balance
     account->balance -= transferAmount;
     bankCard->cardbalance += transferAmount;
@@ -255,21 +281,22 @@ void transferBalanceToCard(Account *account, BankCard *bankCard) {
     hestoric data;
     data.AccountID = account->accountID;
     data.amount = -transferAmount;
-    strcpy(data.detail, "-> Transferred balance to card.");
+    strcpy(data.detail, "Transferred balance to card.");
     getCurrentDate(data.dateop, sizeof(data.dateop));
     savehesto(data);
 
-    printf("\n\033[1;32mSuccess: %.2f DH has been transferred to your card.\033[0m\n", transferAmount);
-    printf("\033[1;34mUpdated Account Balance: %.2f DH\n\033[0m", account->balance);
-    printf("\033[1;34mUpdated Card Balance: %.2f DH\n\033[0m", bankCard->cardbalance);
+    printf(GREEN "\nSuccess: %.2f DH has been transferred to your card.\n\n" RESET, transferAmount);
+    printf("Updated Account Balance: " BOLD "%.2f DH\n" RESET, account->balance);
+    printf("Updated Card Balance: " BOLD "%.2f DH" RESET, bankCard->cardbalance);
 }
+
 void logPaidBill(long long accountID, int billID) {
     char filename[50];
     sprintf(filename, "paid_bills_%lld.txt", accountID);
 
     FILE *file = fopen(filename, "a"); // Append to the file
     if (!file) {
-        printf("\033[1;31mError: Unable to log the paid bill!\033[0m\n");
+        printf(RED "Error: Unable to log the paid bill!\n" RESET);
         return;
     }
     fprintf(file, "%d\n", billID); // Log the bill ID
@@ -302,38 +329,37 @@ void payBills(Account *selectedAccount) {
         {19482, "Water", 50.00},
         {29301, "Electricity", 100.00},
         {38491, "Wifi", 60.00},
-        {47281, "Car Insurance", 200.00}
+        {47281, "Car Insurance", 200.00},
+        {56382, "Netflix", 200.00}
     };
     int numFactures = sizeof(factures) / sizeof(factures[0]);
 
     while (1) {
         // Display unpaid bills
-        printf("\n\033[1;36m========== Available Bills to Pay ==========\033[0m\n");
-        printf("\033[1;33m+---------+------------------+-------------+\033[0m\n");
-        printf("\033[1;33m|   ID    |       Name       |   Amount DH |\033[0m\n");
-        printf("\033[1;33m+---------+------------------+-------------+\033[0m\n");
+        printf(CYAN "\n========== Available Bills to Pay ============\n" RESET);
+        printf(YELLOW "+---------+------------------+---------------+\n" RESET);
+        printf(YELLOW "|   ID    |       Name       |   Amount DH   |\n" RESET);
+        printf(YELLOW "+---------+------------------+---------------+\n" RESET);
 
         int availableBills = 0;
         for (int i = 0; i < numFactures; i++) {
             if (factures[i].id != 0 && !isBillPaid(selectedAccount->accountID, factures[i].id)) {
-                printf("\033[1;32m| %7d | %-16s | %10.2f DH |\033[0m\n",
+                printf(YELLOW "|" RESET CYAN " %7d " RESET YELLOW "|" RESET " %-16s " YELLOW "|" RESET" %10.2f DH " YELLOW "|\n" RESET,
                        factures[i].id, factures[i].name, factures[i].amount);
                 availableBills++;
             }
         }
-        printf("\033[1;33m+---------+------------------+-------------+\033[0m\n");
+        printf(YELLOW "+---------+------------------+---------------+\n" RESET);
 
         // If no bills are left to pay
         if (availableBills == 0) {
-            printf("\033[1;32mAll bills are paid! No bills available.\033[0m\n");
+            printf(GREEN "All bills are paid! No bills available.\n" RESET);
             return;
         }
 
-        printf("\033[1;35mEnter 0 to return to the previous page.\033[0m\n");
-
         // Input: User selects a bill by ID
         char enteredInput[10];
-        printf("\n\033[1;35mEnter the ID of the bill you want to pay: \033[0m");
+        printf(PURPLE "\nEnter the ID of the bill you want to pay (0 To cancel): ");
         scanf("%s", enteredInput);
 
         // Validate input
@@ -346,13 +372,13 @@ void payBills(Account *selectedAccount) {
         }
 
         if (!isNumeric) {
-            printf("\033[1;31mError: Invalid input! Please enter a valid numeric ID.\033[0m\n");
+            printf(RED "Error: Invalid input! Please enter a valid numeric ID.\n" RESET);
             continue;
         }
 
         int enteredID = atoi(enteredInput);
         if (enteredID == 0) {
-            printf("\033[1;33mReturning to the previous menu...\033[0m\n");
+            printf(YELLOW "Returning to the previous menu...\n" RESET);
             return;
         }
 
@@ -366,14 +392,18 @@ void payBills(Account *selectedAccount) {
         }
 
         if (!selectedFacture || selectedFacture->id == 0 || isBillPaid(selectedAccount->accountID, enteredID)) {
-            printf("\033[1;31mError: Invalid or already paid bill ID!\033[0m\n");
+            printf(RED "\nError: Invalid or already paid bill ID!\n" RESET);
+            fordelay(1200000000);
+            system("cls");
             continue;
         }
 
         // Check if the account has sufficient balance
         if (selectedAccount->balance < selectedFacture->amount) {
-            printf("\033[1;31mInsufficient funds to pay for %s (%.2f DH)!\033[0m\n",
+            printf(RED "\nInsufficient funds to pay for %s (%.2f DH)!" RESET,
                    selectedFacture->name, selectedFacture->amount);
+            fordelay(1200000000);
+            system("cls");
             continue;
         }
 
@@ -392,8 +422,10 @@ void payBills(Account *selectedAccount) {
         // Log the bill as paid
         logPaidBill(selectedAccount->accountID, enteredID);
 
-        printf("\n\033[1;32mSuccess: You have paid for %s (%.2f DH).\033[0m\n",
+        printf(GREEN "\nSuccess: You have paid for %s (%.2f DH).\n" RESET,
                selectedFacture->name, selectedFacture->amount);
-        printf("\033[1;34mRemaining Balance: %.2f DH\n\033[0m", selectedAccount->balance);
+        printf("\nRemaining Balance: " BOLD "%.2f DH" RESET, selectedAccount->balance);
+        fordelay(1200000000);
+        system("cls");
     }
 }

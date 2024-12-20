@@ -24,7 +24,7 @@ void getCurrentDate(char *buffer, size_t bufferSize)
     strftime(buffer, bufferSize, "%Y-%m-%d at %H:%M:%S", t);
 }
 
-// Function to print the menu with advanced style
+// Function to print the menu with circular navigation
 int choose_item(char **items, char *title)
 {
     int selected_option = 0;
@@ -52,12 +52,12 @@ int choose_item(char **items, char *title)
                 if (strcmp(items[i], "Exit") == 0 || strcmp(items[i], "Return") == 0 || strcmp(items[i], "Log out") == 0)
                 {
                     setCursor(i + 3, 103);
-                    printf(RED "  > %s " RESET, items[i]);  // Red for Exit/Return
+                    printf(RED BOLD "  > %s " RESET, items[i]); // Red for Exit/Return
                 }
                 else
                 {
                     setCursor(i + 3, 103);
-                    printf(GREEN "  > %s " RESET, items[i]);  // Green for selected options
+                    printf(GREEN BOLD "  > %s " RESET, items[i]); // Green for selected options
                 }
             }
             else
@@ -66,15 +66,15 @@ int choose_item(char **items, char *title)
                 if (strcmp(items[i], "Exit") == 0 || strcmp(items[i], "Return") == 0 || strcmp(items[i], "Log out") == 0)
                 {
                     setCursor(i + 3, 103);
-                    printf(RED "    %s " RESET, items[i]);  // Red for Exit/Return
+                    printf(RED "    %s " RESET, items[i]); // Red for Exit/Return
                 }
                 else
                 {
                     setCursor(i + 3, 103);
-                    printf(WHITE "    %s " RESET, items[i]);  // White for normal options
+                    printf(WHITE "    %s " RESET, items[i]); // White for normal options
                 }
             }
-            printf("\n");  // Move to the next line after each option
+            printf("\n"); // Move to the next line after each option
         }
 
         // Get user input for navigation
@@ -82,48 +82,55 @@ int choose_item(char **items, char *title)
         if (key == 224)
         { // Arrow key prefix
             key = _getch();
-            if (key == 72 && selected_option > 0)
-            { // Up arrow
-                selected_option--;
+            if (key == 72) // Up arrow
+            {
+                selected_option = (selected_option == 0) ? item_count - 1 : selected_option - 1;
             }
-            else if (key == 80 && selected_option < item_count - 1)
-            { // Down arrow
-                selected_option++;
+            else if (key == 80) // Down arrow
+            {
+                selected_option = (selected_option == item_count - 1) ? 0 : selected_option + 1;
             }
         }
-        else if (key == 13)
-        { // Enter key
+        else if (key == 13) // Enter key
+        {
             system("cls");
             return selected_option;
         }
-        
+
         system("cls");
     }
 }
 
-bool setAndConfirmPIN(char *PIN) {
+bool setAndConfirmPIN(char *PIN)
+{
     char tempPIN[5] = "\0";
     bool check = false;
 
-    while (1) {
+    while (1)
+    {
         // Step 1: Set the PIN
-        while (!check) {
+        while (!check)
+        {
             printf("Set a 4-digit PIN: ");
             PIN_hide(PIN, sizeof(tempPIN));
             check = (strlen(PIN) == 4) && isNumericString(PIN);
-            if (!check) {
-                printf("Invalid PIN. Please ensure it is a 4-digit number.\n");
+            if (!check)
+            {
+                printf(RED "Invalid PIN.\n" RESET "Please ensure it is a 4-digit number.\n");
             }
         }
         check = false;
 
         // Step 2: Confirm the PIN
-        printf("Confirm your PIN: ");
+        printf("Confirm  your PIN: ");
         PIN_hide(tempPIN, sizeof(tempPIN));
 
-        if (!validatePIN(PIN, tempPIN)) {
+        if (!validatePIN(PIN, tempPIN))
+        {
             printf("PINs do not match. Try again.\n");
-        } else {
+        }
+        else
+        {
             return true; // PIN successfully set
         }
     }
@@ -134,12 +141,12 @@ void PIN_hide(char *PIN, int max_length)
     int i = 0;
     char ch;
 
-    while (i < max_length - 1 && (ch = _getch()) != '\r')  // '\r' is Enter key in Windows
-    { 
-        if (ch == '\b' && i > 0)  // Handle backspace
-        { 
+    while (i < max_length - 1 && (ch = _getch()) != '\r') // '\r' is Enter key in Windows
+    {
+        if (ch == '\b' && i > 0) // Handle backspace
+        {
             i--;
-            printf("\b \b");  // Move back, overwrite with space, and move back again
+            printf("\b \b"); // Move back, overwrite with space, and move back again
         }
         else if (ch != '\b')
         {
@@ -157,9 +164,12 @@ int validatePIN(const char *enteredPIN, const char *correctPIN)
 }
 
 // Function to check if a string contains only letters and spaces
-int isAlphaString(char *str) {
-    while (*str) {
-        if (!isalpha(*str) && *str != ' ') { // Allow only letters and spaces
+int isAlphaString(char *str)
+{
+    while (*str)
+    {
+        if (!isalpha(*str) && *str != ' ')
+        {             // Allow only letters and spaces
             return 0; // Invalid
         }
         str++;
@@ -191,14 +201,14 @@ int isAlphanumericString(char *str)
 
 void fordelay(int j)
 {
-  int i, k;
-  for (i = 0; i < j; i++)
-    k = i;
+    int i, k;
+    for (i = 0; i < j; i++)
+        k = i;
 }
 
-void displaySpectacularLoadingBar(int duration) 
+void displaySpectacularLoadingBar(int duration)
 {
-    const int barWidth = 40; // Width of the progress bar
+    const int barWidth = 40;  // Width of the progress bar
     char spinner[] = "|/-\\"; // Spinner animation
     int spinnerIndex = 0;     // Index for spinner animation
 
@@ -206,7 +216,8 @@ void displaySpectacularLoadingBar(int duration)
     printf(CYAN "Starting the application... Please wait.\n\n" RESET);
 
     // Loading bar
-    for (int progress = 0; progress <= 100; progress++) {
+    for (int progress = 0; progress <= 100; progress++)
+    {
         int pos = (progress * barWidth) / 100; // Calculate current position in the bar
 
         // Color gradient based on progress
@@ -233,10 +244,14 @@ void displaySpectacularLoadingBar(int duration)
 
         // Clear the current line and print the loading bar
         printf("\r%s[", color);
-        for (int i = 0; i < barWidth; i++) {
-            if (i < pos) {
+        for (int i = 0; i < barWidth; i++)
+        {
+            if (i < pos)
+            {
                 printf("#"); // Filled blocks
-            } else {
+            }
+            else
+            {
                 printf(" "); // Empty space
             }
         }
@@ -259,23 +274,27 @@ void displaySpectacularLoadingBar(int duration)
 // Gradient color array
 const char *colors[] = {RED, YELLOW, GREEN, CYAN, BLUE, MAGENTA};
 
-void gradientSpinner(int duration) {
+void gradientSpinner(int duration)
+{
     char spinner[] = "|/-\\";
     int spinnerIndex = 0;
 
     printf("\nAccessing Account...\n");
 
-    for (int i = 0; i < 100; i++) {
+    for (int i = 0; i < 100; i++)
+    {
         printf("\r%s%c " RESET "Loading... %d%%", colors[i % 6], spinner[spinnerIndex], i + 1);
 
         fflush(stdout);
-        spinnerIndex = (spinnerIndex + 1) % 4 ;
+        spinnerIndex = (spinnerIndex + 1) % 4;
         usleep(duration * 1000); // Adjust speed
     }
 }
 
-void typingEffect(const char *text, int speed) {
-    for (int i = 0; i < strlen(text); i++) {
+void typingEffect(const char *text, int speed)
+{
+    for (int i = 0; i < strlen(text); i++)
+    {
         printf("%c", text[i]);
         fflush(stdout);
         usleep(speed * 1000);
@@ -284,7 +303,8 @@ void typingEffect(const char *text, int speed) {
 }
 
 // Function to set the cursor position
-void setCursor(int row, int col) {
+void setCursor(int row, int col)
+{
     printf("\033[%d;%dH", row, col);
 }
 
@@ -292,7 +312,7 @@ void formatString(char *input)
 {
     int len = strlen(input);
     // Affichage
-    printf("\n%s==> %s", CYAN, GREEN );
+    printf(CYAN "\n\t\t      ==> " RESET);
     for (int i = 0; i < len; i++)
     {
         printf("%c", input[i]);
@@ -302,7 +322,5 @@ void formatString(char *input)
             printf(" ");
         }
     }
-    printf(CYAN"%s <==\n\n\n", RESET);
+    printf(CYAN " <==\n\n\n", RESET);
 }
-
-
