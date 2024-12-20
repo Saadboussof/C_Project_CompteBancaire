@@ -36,11 +36,11 @@ void displayAllClients()
     setCursor(21, 4);
 
     printf(PURPLE
-           "+------------------------------------------------------ All Clients -------------------------------------------------------+\n" RESET);
+           "+------------------------------------------------- All Clients --------------------------------------------------+\n" RESET);
     setCursor(22, 4);
     printf(PURPLE "|" RESET ORANGE " %-2s " RESET PURPLE "|" RESET ORANGE " %-9s " RESET PURPLE "|" RESET ORANGE " %-8s " RESET PURPLE "|" RESET ORANGE " %-19s " RESET PURPLE "|" RESET ORANGE " %-12s " RESET PURPLE "|" RESET ORANGE " %-11s " RESET PURPLE "|" RESET ORANGE " %-6s " RESET PURPLE "|" RESET ORANGE " %-22s " RESET PURPLE "|" RESET "\n", "No", "Client ID", "CIN", "Name", "Phone Number", "Blacklisted", "Active", "Date Created");
     setCursor(23, 4);
-    printf(PURPLE "+--------------------------------------------------------------------------------------------------------------------------+\n" RESET);
+    printf(PURPLE "+----------------------------------------------------------------------------------------------------------------+\n" RESET);
 
     while (fread(&client, sizeof(Client), 1, file) == 1)
     {
@@ -62,16 +62,16 @@ void displayAllClients()
     if (count == 0) // file opened but no clients found
     {
         setCursor(24, 4);
-        printf(PURPLE "|                                                                                                                          |\n" RESET);
-        printf(PURPLE "|" RESET ORANGE "                                        No clients found in the database                                                  " RESET PURPLE "|\n" RESET);
-        printf(PURPLE "|                                                                                                                          |\n" RESET);
-        printf(PURPLE "+--------------------------------------------------------------------------------------------------------------------------+\n" RESET);
+        printf(PURPLE "|                                                                                                                |\n" RESET);
+        printf(PURPLE "|" RESET ORANGE "                                   No clients found in the database                                             " RESET PURPLE "|\n" RESET);
+        printf(PURPLE "|                                                                                                                |\n" RESET);
+        printf(PURPLE "+----------------------------------------------------------------------------------------------------------------+\n" RESET);
     }
 
     else
     {
         setCursor(23 + count, 4);
-        printf(PURPLE "+--------------------------------------------------------------------------------------------------------------------------+\n" RESET);
+        printf(PURPLE "+----------------------------------------------------------------------------------------------------------------+\n" RESET);
         printf(GREEN "\n\tDisplayed" RESET BOLD " %d " RESET GREEN "client(s) successfully.\n" RESET, count);
     }
 }
