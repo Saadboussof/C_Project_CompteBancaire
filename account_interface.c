@@ -135,7 +135,7 @@ void creatingAccountRequest(long long ownerID)
     newAccount.ownerID = ownerID;
 
     // The balance of a new Account is 0.00 and it's unblocked.
-    newAccount.balance = 0.00;
+    newAccount.balance = 2000.00; TODO: // test
 
     newAccount.isBlocked = 0;
 
