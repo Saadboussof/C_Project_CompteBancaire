@@ -5,9 +5,6 @@
 
 void welcom()
 {
-<<<<<<< HEAD
-    displaySpectacularLoadingBar(50);
-=======
     getch();
 
     displaySpectacularLoadingBar(50);

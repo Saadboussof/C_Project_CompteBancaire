@@ -122,7 +122,7 @@ char *Choicess[] = {
     "Card number",
     "Transaction",
     "History",
-    "transfertcard",
+    "transfertocard",
     "Return",
     "Exit",
     NULL};
