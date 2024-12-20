@@ -34,7 +34,6 @@ void Client_Portal()
     }
 }
 
-
 void requestCIN() // (8 caraters long) + (first alpha) + (second alpha or num) + (rest num)
 {
     while (1)
@@ -103,6 +102,7 @@ void logIn_Client()
             break;
         case '2':
             signUpRequest();
+            client = findClient(CIN, 0, 1);
             break;
         default:
             printf(RED "Invalid choice. Please enter 1 or 2.\n" RESET);
@@ -148,7 +148,7 @@ int authenticateClient(Client *client)
         }
     }
     printf(ORANGE "Too many failed attempts. Exiting...\n" RESET); // The program exit
-    return 0;
+    Client_Portal();
 }
 
 int checkClientApprovalStatus(Client *client)
@@ -165,6 +165,7 @@ int checkClientApprovalStatus(Client *client)
         printf("\n");
         if (choice == '1')
             updateClient(client->CIN);
+        Client_Portal();
         return 0;
     }
     return 1;
@@ -185,10 +186,12 @@ void signUpRequest()
     else
     {
         Client newClient = createClient();
-        if(saveClientToFile(&newClient)) 
+        if(saveClientToFile(&newClient)) {
             printf(GREEN "Client saved successfully!\n" RESET);
-        // Client_Portal();
-        return;
+            fordelay(600000000);
+            system("cls");
+        }
+        Client_Portal();
     }
 }
 
@@ -226,7 +229,7 @@ Client createClient()
     scanf(" %[^\n]", newClient.address);
 
     newClient.Blacklisted = 0;
-    newClient.activation = 0;
+    newClient.activation = 1;   TODO: // test
 
     setAndConfirmPIN(newClient.PIN);
 
@@ -348,7 +351,8 @@ void updateClient(char *cin)
     rename("temp_clients.dat", "clients.dat");
 
     printf(GREEN "Client details updated successfully in the database.\n" RESET);
-    // main();
+    fordelay(600000000);
+    system("cls");
     return;
 }
 
